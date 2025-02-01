@@ -4,6 +4,8 @@ from shutil import which
 from math import *
 can_run = True
 pip = which('pip') is not None
+install_toml = ""
+install_pyqt6 = ""
     
 try: import toml
 except:
