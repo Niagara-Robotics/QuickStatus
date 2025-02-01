@@ -59,13 +59,13 @@ for i in range(100):
     values.append(random.randrange(0,5))
 if sys.platform == "darwin":
     print("mac detected, becoming tim apple")
-    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/mac.png')
+    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/icons/mac.png')
 elif sys.platform == "win32":
     print("windows detected, becoming annoying")
-    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/generic.png')
+    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/icons/generic.png')
 else:
     print("linux (probably) detected, hacking mainframe")
-    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/generic.png')
+    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/icons/generic.png')
 
 # save window positions
 def SavePosition(window):
@@ -320,6 +320,7 @@ if __name__ == '__main__':
     # pyqt stuff
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(path))
+    app.setApplicationName("Fart")
     if sys.platform == 'win32': app.setStyle('Fusion')
     ex = MainWindow()
     #ex.show()
