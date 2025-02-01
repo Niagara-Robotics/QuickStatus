@@ -2,11 +2,11 @@
 import sys, os, random, time
 from shutil import which
 from math import *
+import PyQt6
 can_run = True
 pip = which('pip') is not None
 install_toml = ""
 install_pyqt6 = ""
-    
 try: import toml
 except:
     if pip == False:
@@ -60,10 +60,10 @@ if sys.platform == "darwin":
     path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/mac.png')
 elif sys.platform == "win32":
     print("windows detected, becoming annoying")
-    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/win.png')
+    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/generic.png')
 else:
     print("linux (probably) detected, hacking mainframe")
-    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/linux.png')
+    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/generic.png')
 
 # save window positions
 def SavePosition(window):
@@ -318,6 +318,7 @@ if __name__ == '__main__':
     # pyqt stuff
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(path))
+    if sys.platform == 'win32': app.setStyle('Fusion')
     ex = MainWindow()
     #ex.show()
     sys.exit(app.exec())
