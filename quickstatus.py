@@ -45,6 +45,11 @@ if can_run == False:
     print("mf really neglected to install the modules i NEED to run. shutting the whole operation down.")
     sys.exit()
 
+def resource_path(relative_path):
+    # absolute file paths
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
 # setup variables
 start_time = time.time()
 w = 640; h = 480
@@ -59,13 +64,13 @@ for i in range(100):
     values.append(random.randrange(0,5))
 if sys.platform == "darwin":
     print("mac detected, becoming tim apple")
-    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/icons/mac.png')
+    path = resource_path('assets/icons/mac.png')
 elif sys.platform == "win32":
     print("windows detected, becoming annoying")
-    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/icons/generic.png')
+    path = resource_path('assets/icons/generic.png')
 else:
     print("linux (probably) detected, hacking mainframe")
-    path = os.path.join(os.path.dirname(sys.modules[__name__].__file__), 'assets/icons/generic.png')
+    path = resource_path('assets/icons/generic.png')
 
 # save window positions
 def SavePosition(window):
@@ -289,17 +294,17 @@ if __name__ == '__main__':
 
     # config
     try:
-        config = open("assets/config.toml")
+        config = open(resource_path("assets/config.toml"))
         config.close()
     except:
         print("no config file found. making one for you 🥰")
-        config = open("assets/config.toml", "w")
+        config = open(resource_path("assets/config.toml"), "w")
         #setup default values
         config.write('''[general]
                      [status]
                      [tabs]''')
         config.close()
-        with open('assets/config.toml', 'r') as f:
+        with open(resource_path('assets/config.toml'), 'r') as f:
             config = toml.load(f)
         
         config['general']['save-window-positions'] = True
@@ -311,16 +316,15 @@ if __name__ == '__main__':
 
         config['tabs']['enabled'] = True
 
-        with open('assets/config.toml', 'w') as f:
+        with open(resource_path('assets/config.toml'), 'w') as f:
             toml.dump(config, f)
 
-    with open('assets/config.toml', 'r') as f:
+    with open(resource_path('assets/config.toml'), 'r') as f:
         config = toml.load(f)
 
     # pyqt stuff
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(path))
-    app.setApplicationName("Fart")
     if sys.platform == 'win32': app.setStyle('Fusion')
     ex = MainWindow()
     #ex.show()
