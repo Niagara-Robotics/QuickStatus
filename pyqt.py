@@ -7,19 +7,21 @@ can_run = True
 pip = which('pip') is not None
 install_toml = ""
 install_pyqt6 = ""
+
+# toml
 try: import toml
 except:
     if pip == False:
         print('Missing toml module, can\'t install because you don\'t have pip\nhttps://pip.pypa.io/en/stable/installation/')
         sys.exit()
     while not (install_toml.capitalize() == "Y" or install_toml.capitalize() == "N"):
-        install_toml = input("You don't have the toml module installed! Install it now? (Y/N)\n")
+        install_toml = input("You don't have the toml module installed! Install it now? (Y/n) ")
     if install_toml.capitalize() == "Y":
         os.system('pip install toml')
         import toml
     else:
         can_run = False
-
+# pyqt6
 try:
     from PyQt6.QtCore import *
     from PyQt6.QtGui import *
@@ -28,10 +30,10 @@ try:
     from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QLabel
 except:
     if pip == False:
-        print('Hell nah you aint got pip installed\nhttps://pip.pypa.io/en/stable/installation/')
+        print('Missing PyQt6 module, can\'t install because you don\'t have pip\nhttps://pip.pypa.io/en/stable/installation/')
         sys.exit()
     while not (install_pyqt6.capitalize() == "Y" or install_pyqt6.capitalize() == "N"):
-        install_pyqt6 = input("You don't have the PyQt6 module installed! Install it now? (Y/N)\n")
+        install_pyqt6 = input("You don't have the PyQt6 module installed! Install it now? (Y/n) ")
     if install_pyqt6.capitalize() == "Y":
         os.system('pip install pyqt6')
         os.system('python3 pyqt.py') # restart program, pyqt6 breaks when trying to import after installation for some reason
