@@ -187,10 +187,11 @@ class PagesWindow(QWidget):
         layout.addWidget(last_page,0,1, Qt.AlignmentFlag.AlignBottom)'''
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(self.tabs.TabPosition.South)
+        self.tabs.setAutoFillBackground(True)
+        palette = self.palette()
 
         self.tab1UI()
         self.tab2UI()
-        self.tab3UI()
 
         self.layout.addWidget(self.tabs)
 
@@ -201,15 +202,10 @@ class PagesWindow(QWidget):
     def tab1UI(self):
         self.tab1 = RobotStateWidget()
         self.tabs.addTab(self.tab1, "Robot State")
+        self.tab1.setAutoFillBackground(True)
     def tab2UI(self):
         self.tab2 = StatusWindow()
         self.tabs.addTab(self.tab2, "Status Lights")
-    def tab3UI(self):
-        self.tab3 = QPushButton("Blow up all the BMW showrooms in britain")
-        self.tab3.clicked.connect(self.destruct)
-        self.tabs.addTab(self.tab3, "Self Destruction")
-    def destruct(self):
-        sys.exit()
 
     def closeEvent(self, e):
         self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
@@ -312,6 +308,7 @@ class RobotStateWidget(QWidget):
     def __init__(self, parent=None):
         super(RobotStateWidget, self).__init__(parent)
         self.settings = QSettings('QuickStatus', 'Status')
+        self.setWindowTitle(title + ' Robot State')
         self.resize(500,500)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
