@@ -187,9 +187,7 @@ class PagesWindow(QWidget):
         layout.addWidget(last_page,0,1, Qt.AlignmentFlag.AlignBottom)'''
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(self.tabs.TabPosition.South)
-        self.tabs.setAutoFillBackground(True)
-        palette = self.palette()
-
+        
         self.tab1UI()
         self.tab2UI()
 
