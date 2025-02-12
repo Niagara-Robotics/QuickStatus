@@ -111,10 +111,12 @@ class MainWindow(QMainWindow):
         self.w1 = StatusWindow()
         self.w2 = PagesWindow()
         self.w3 = RobotStateWidget()
+        self.w4 = ClawStateWidget()
 
         if config['status']['enabled']: self.w1.show()
         if config['tabs']['enabled']: self.w2.show()
         if config['robot']['enabled']: self.w3.show()
+        if config['claw']['enabled']: self.w4.show()
 
         '''widget = QWidget()
         layout = QGridLayout(widget)
@@ -188,8 +190,9 @@ class PagesWindow(QWidget):
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(self.tabs.TabPosition.South)
         
-        self.tab1UI()
-        self.tab2UI()
+        self.ClawTab()
+        self.RobotStateTab()
+        self.StatusTab()
 
         self.layout.addWidget(self.tabs)
 
@@ -197,13 +200,16 @@ class PagesWindow(QWidget):
 
         self.setWindowTitle(title + ' Tabs')
 
-    def tab1UI(self):
+    def RobotStateTab(self):
         self.tab1 = RobotStateWidget()
         self.tabs.addTab(self.tab1, "Robot State")
         self.tab1.setAutoFillBackground(True)
-    def tab2UI(self):
+    def StatusTab(self):
         self.tab2 = StatusWindow()
         self.tabs.addTab(self.tab2, "Status Lights")
+    def ClawTab(self):
+        self.tab3 = ClawStateWidget()
+        self.tabs.addTab(self.tab3, "Claw State")
 
     def closeEvent(self, e):
         self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
@@ -322,7 +328,6 @@ class RobotStateWidget(QWidget):
         foreground_colour = palette.color(QPalette.ColorRole.Text)
         foreground_colour.setAlpha(255)
         colour_chart = [foreground_colour, accent_colour, caution_colour, warning_colour, death_colour]
-        dark = palette.color(QPalette.ColorRole.Mid)
 
         size = self.size()
         w = size.width()
@@ -418,6 +423,47 @@ class RobotStateWidget(QWidget):
         self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         e.accept()
 
+class ClawStateWidget(QWidget):
+    def __init__(self, parent=None):
+        super(ClawStateWidget, self).__init__(parent)
+        self.settings = QSettings('QuickStatus', 'Status')
+        self.setWindowTitle(title + ' Claw State')
+        self.resize(500,500)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update)
+        self.timer.start(config['claw']['update-rate'])
+        self.clawsvg = QPixmap("assets/claw/claw_arm.svg")
+        claw = open(resource_path('assets/claw/claw.coords'))
+        clawl = []
+        self.clawv = []
+        b = 0
+        for i in claw:
+            clawl.append(i.strip("\n"))
+            self.clawv.append(QPointF(float(clawl[b].split(", ")[0]), float(clawl[b].split(", ")[1])))
+            b += 1
+        claw.close()
+
+    def paintEvent(self, event):
+        qp = QPainter(self.clawsvg)
+        qp.setRenderHint(QPainter.RenderHint.Antialiasing) # VERY IMPORTANT AND MAKES EVERYTHING BEAUTIFUL ✨
+        palette = self.palette()
+        background_colour = palette.color(QPalette.ColorRole.Window)
+        foreground_colour = palette.color(QPalette.ColorRole.Text)
+        foreground_colour.setAlpha(255)
+        colour_chart = [foreground_colour, accent_colour, caution_colour, warning_colour, death_colour]
+        #self.clawsvg.fill(background_colour)
+
+        qp.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
+        qp.setBrush(foreground_colour)
+        qp.fillRect(self.clawsvg.rect(), foreground_colour)
+        icon = QIcon(self.clawsvg)
+        qp.end()
+        qp = QPainter(self)
+        qp.setRenderHint(QPainter.RenderHint.Antialiasing)
+        #qp.drawPixmap(self.clawsvg.rect(), icon.pixmap(icon.actualSize(QSize(2000,2000))))
+        qp.setBrush(foreground_colour)
+        qp.drawPolygon(self.clawv)
+
 if __name__ == '__main__':
 
     # config
@@ -448,6 +494,10 @@ if __name__ == '__main__':
     base-lock = false
     wheel-lock = false
     # ms between refreshing display
+    update-rate = 10
+
+[claw]
+    enabled = false
     update-rate = 10''')
         config.close()
 
