@@ -213,7 +213,7 @@ class StatusIndicatorWidget(QWidget):
         self.num_circles = len(things)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
-        self.timer.start(config['status']['update-rate'])
+        self.timer.start(int(1000/config['status']['update-rate']))
 
     # scrolling setup
     def minimumSizeHint(self):
@@ -307,7 +307,7 @@ class RobotStateWidget(QWidget):
         self.resize(500,500)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
-        self.timer.start(config['robot']['update-rate'])
+        self.timer.start(int(1000/config['robot']['update-rate']))
         self.br = 0
     # draw status lights
     def paintEvent(self, event):
@@ -422,11 +422,10 @@ class ClawStateWidget(QWidget):
         self.resize(500,500)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
-        self.timer.start(config['claw']['update-rate'])
-        self.clawsvg = QPixmap("assets/claw/claw_arm.svg")
+        self.timer.start(int(1000/config['claw']['update-rate']))
         claw = open(resource_path('assets/claw/claw.coords'))
-        clawl = []
         self.clawv = []
+        clawl = []
         b = 0
         for i in claw:
             clawl.append(i.strip("\n"))
@@ -514,8 +513,8 @@ if __name__ == '__main__':
     scroll-vertical = true
     # Blink speed (seconds)
     blink-speed = 0.75
-    # ms between refreshing display
-    update-rate = 10
+    # Widget refresh rate in Hz
+    update-rate = 100
     
 [tabs]
     enabled = true
@@ -529,8 +528,8 @@ if __name__ == '__main__':
     enabled = false
     base-lock = false
     wheel-lock = false
-    # ms between refreshing display
-    update-rate = 10
+    # Widget refresh rate in Hz
+    update-rate = 100
 
 [claw]
     enabled = false
