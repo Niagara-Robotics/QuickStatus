@@ -196,7 +196,7 @@ class PagesWindow(QWidget):
 
     def RobotStateTab(self):
         self.tabs.addTab(RobotStateWidget(), "Robot State")
-        RobotStateWidget().setAutoFillBackground(True)
+        #RobotStateWidget().setAutoFillBackground(True)
     def StatusTab(self):
         self.tabs.addTab(StatusWindow(), "Status Lights")
     def ClawTab(self):
