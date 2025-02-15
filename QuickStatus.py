@@ -78,15 +78,7 @@ power_colour = QColor("#47AC25")
 for i in range(100):
     things.append("i am a new object")
     values.append(random.randrange(0,5))
-if sys.platform == "darwin":
-    print("mac detected, becoming tim apple")
-    path = resource_path('assets/icons/mac.png')
-elif sys.platform == "win32":
-    print("windows detected, becoming annoying")
-    path = resource_path('assets/icons/generic.png')
-else:
-    print("linux (probably) detected, hacking mainframe")
-    path = resource_path('assets/icons/generic.png')
+path = resource_path('assets/icons/mac.png')
 
 # save window positions
 def SavePosition(window):
@@ -499,9 +491,9 @@ class ClawStateWidget(QWidget):
         qp.scale(scale,scale)
         qp.translate(cw/scale,ch/scale)
         qp.translate(0,-self.elev1*500)
-        qp.drawRoundedRect(QRectF(-125,-25,250,550), 35,35)
+        qp.drawRoundedRect(QRectF(-125,-25,250,550), 0,0)
         qp.translate(0,-self.elev2*500)
-        qp.drawRoundedRect(QRectF(-100,0,200,500), 10,10)
+        qp.drawRoundedRect(QRectF(-100,0,200,500), 0,0)
 
 if __name__ == '__main__':
 
