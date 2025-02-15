@@ -190,9 +190,11 @@ class PagesWindow(QWidget):
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(self.tabs.TabPosition.South)
         
-        self.ClawTab()
-        self.RobotStateTab()
-        self.StatusTab()
+        if len(config['tabs']['tabs']) > 0: 
+            for i in config['tabs']['tabs']:
+                if i == 'claw': self.ClawTab()
+                if i == 'robot': self.RobotStateTab()
+                if i == 'status': self.StatusTab()
 
         self.layout.addWidget(self.tabs)
 
@@ -201,15 +203,12 @@ class PagesWindow(QWidget):
         self.setWindowTitle(title + ' Tabs')
 
     def RobotStateTab(self):
-        self.tab1 = RobotStateWidget()
-        self.tabs.addTab(self.tab1, "Robot State")
-        self.tab1.setAutoFillBackground(True)
+        self.tabs.addTab(RobotStateWidget(), "Robot State")
+        RobotStateWidget().setAutoFillBackground(True)
     def StatusTab(self):
-        self.tab2 = StatusWindow()
-        self.tabs.addTab(self.tab2, "Status Lights")
+        self.tabs.addTab(StatusWindow(), "Status Lights")
     def ClawTab(self):
-        self.tab3 = ClawStateWidget()
-        self.tabs.addTab(self.tab3, "Claw State")
+        self.tabs.addTab(ClawStateWidget(), "Claw State")
 
     def closeEvent(self, e):
         self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
@@ -528,6 +527,11 @@ if __name__ == '__main__':
     
 [tabs]
     enabled = true
+    tabs = [
+        'claw',
+        'robot',
+        'status'
+    ]
 
 [robot]
     enabled = false
