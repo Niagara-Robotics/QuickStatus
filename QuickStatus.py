@@ -444,25 +444,65 @@ class ClawStateWidget(QWidget):
         claw.close()
 
     def paintEvent(self, event):
-        qp = QPainter(self.clawsvg)
+        qp = QPainter(self)
         qp.setRenderHint(QPainter.RenderHint.Antialiasing) # VERY IMPORTANT AND MAKES EVERYTHING BEAUTIFUL ✨
         palette = self.palette()
         background_colour = palette.color(QPalette.ColorRole.Window)
         foreground_colour = palette.color(QPalette.ColorRole.Text)
         foreground_colour.setAlpha(255)
         colour_chart = [foreground_colour, accent_colour, caution_colour, warning_colour, death_colour]
-        #self.clawsvg.fill(background_colour)
+        size = self.size()
+        w = size.width()
+        h = size.height()
+        cw = w/2 # canvas width
+        ch = h/2 # canvas height
 
-        qp.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
         qp.setBrush(foreground_colour)
-        qp.fillRect(self.clawsvg.rect(), foreground_colour)
-        icon = QIcon(self.clawsvg)
-        qp.end()
-        qp = QPainter(self)
-        qp.setRenderHint(QPainter.RenderHint.Antialiasing)
-        #qp.drawPixmap(self.clawsvg.rect(), icon.pixmap(icon.actualSize(QSize(2000,2000))))
-        qp.setBrush(foreground_colour)
-        qp.drawPolygon(self.clawv)
+        qp.setPen(QPen(foreground_colour, 8))
+        qp.save()
+        claw = QPolygonF(self.clawv)
+
+        scale = cw/500
+
+        irx1 = 100*-0.5
+        iry1 = 300*-0.5
+        self.arm = 45
+        self.elev1 = 0
+        self.elev2 = 1
+        self.elev3 = 0.73
+        
+        # arm
+        qp.scale(scale,scale)
+        qp.translate(cw/scale,ch/scale)
+        qp.translate(0,-self.elev2*500+500-self.elev3*500)
+        qp.rotate(self.arm)
+        qp.translate(irx1,iry1*2) # rotate from middle bottom
+        qp.drawPolygon(claw)
+        qp.setPen(QPen(foreground_colour, 8))
+        qp.setBrush(background_colour)
+        qp.drawEllipse(QPointF(-irx1,-iry1*2),25,25)
+        qp.drawEllipse(QPointF(-irx1,-iry1*2),4,4)
+
+        qp.restore()
+        qp.save()
+            # arm line
+        qp.setPen(QPen(background_colour, 16))
+        qp.scale(scale,scale)
+        qp.translate(cw/scale,ch/scale)
+        qp.translate(0,-self.elev2*500+500-self.elev3*500)
+        qp.drawLine(QLineF(-100,0,100,0))
+        qp.setPen(QPen(foreground_colour, 8))
+        qp.drawLine(QLineF(-100,0,100,0))
+
+        # elevators
+        qp.restore()
+        qp.setBrush(Qt.BrushStyle.NoBrush)
+        qp.scale(scale,scale)
+        qp.translate(cw/scale,ch/scale)
+        qp.translate(0,-self.elev1*500)
+        qp.drawRoundedRect(QRectF(-125,-25,250,550), 35,35)
+        qp.translate(0,-self.elev2*500)
+        qp.drawRoundedRect(QRectF(-100,0,200,500), 10,10)
 
 if __name__ == '__main__':
 
