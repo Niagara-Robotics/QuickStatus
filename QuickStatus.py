@@ -80,35 +80,33 @@ for i in range(100):
     values.append(random.randrange(0,5))
 path = resource_path('assets/icons/mac.png')
 
-# save window positions
-def SavePosition(window):
-    name = window.name
-
-    width = window.size().width()
-    height = window.size().height()
-    x = window.pos().x()
-    y = window.pos().y()
-
-    config[name]['width'] = width
-    config[name]['height'] = height
-    config[name]['x'] = x
-    config[name]['y'] = y
-    with open('assets/config.toml', 'w') as f:
-        toml.dump(config, f)
-
 # create child windows
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        self.w1 = StatusWindow()
-        self.w2 = PagesWindow()
-        self.w3 = RobotStateWidget()
-        self.w4 = ClawStateWidget()
+        MainWindow.windows = 0
+        self.widgets = []
+        for i in range(len(config['windows']['widgets'])):
+            window = config['windows']['widgets'][i]
+            if len(window) > 1:
+                temp_tabs = []
+                for i in window: temp_tabs.append(i)
+                PagesWindow.tablist = temp_tabs.copy()
+                self.widgets.append(PagesWindow())
+                if len(self.widgets):
+                    self.widgets[-1].show()
+            else:
+                if window[0] == 'status': self.widgets.append(StatusWindow())
+                if window[0] == 'robot': self.widgets.append(RobotStateWidget())
+                if window[0] == 'claw': self.widgets.append(ClawStateWidget())
 
-        if config['status']['enabled']: self.w1.show()
+                if len(self.widgets): self.widgets[-1].show()
+            MainWindow.windows += 1
+
+        '''if config['status']['enabled']: self.w1.show()
         if config['tabs']['enabled']: self.w2.show()
         if config['robot']['enabled']: self.w3.show()
-        if config['claw']['enabled']: self.w4.show()
+        if config['claw']['enabled']: self.w4.show()'''
 
         '''widget = QWidget()
         layout = QGridLayout(widget)
@@ -130,7 +128,7 @@ class MainWindow(QMainWindow):
 class StatusWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.settings = QSettings('QuickStatus', 'Status')
+        self.settings = QSettings('QuickStatus', str(MainWindow.windows))
 
         restoreWindow(self)
         
@@ -147,13 +145,14 @@ class StatusWindow(QWidget):
         self.setWindowTitle(title + ' Status Indicators')
 
     def closeEvent(self, e):
-        self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
+        if config['windows']['save-window-positions']:
+            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         e.accept()
 
 # restore window positions
 def restoreWindow(self):
     windowScreenGeometry = self.settings.value( "windowScreenGeometry" )
-    if windowScreenGeometry and config['general']['save-window-positions']:
+    if windowScreenGeometry and config['windows']['save-window-positions']:
             self.restoreGeometry(windowScreenGeometry)
     else:
         self.resize(640, 480)
@@ -162,8 +161,7 @@ def restoreWindow(self):
 class PagesWindow(QWidget):
     def __init__(self):
         super().__init__()
-
-        self.settings = QSettings('QuickStatus', 'Pages')
+        self.settings = QSettings('QuickStatus', str(MainWindow.windows))
 
         restoreWindow(self)
 
@@ -180,13 +178,16 @@ class PagesWindow(QWidget):
         layout.addWidget(next_page,0,2, Qt.AlignmentFlag.AlignBottom)
         layout.addWidget(last_page,0,1, Qt.AlignmentFlag.AlignBottom)'''
         self.tabs = QTabWidget()
-        self.tabs.setTabPosition(self.tabs.TabPosition.South)
         
-        if len(config['tabs']['tabs']) > 0: 
-            for i in config['tabs']['tabs']:
-                if i == 'claw': self.ClawTab()
-                if i == 'robot': self.RobotStateTab()
-                if i == 'status': self.StatusTab()
+        if config['tabs']['align'] == 'bottom': self.tabs.setTabPosition(self.tabs.TabPosition.South)
+        if config['tabs']['align'] == 'top': self.tabs.setTabPosition(self.tabs.TabPosition.North)
+        if config['tabs']['align'] == 'right': self.tabs.setTabPosition(self.tabs.TabPosition.East)
+        if config['tabs']['align'] == 'left': self.tabs.setTabPosition(self.tabs.TabPosition.West)
+        
+        for i in self.tablist:
+            if i == 'claw': self.ClawTab()
+            if i == 'robot': self.RobotStateTab()
+            if i == 'status': self.StatusTab()
 
         self.layout.addWidget(self.tabs)
 
@@ -203,7 +204,8 @@ class PagesWindow(QWidget):
         self.tabs.addTab(ClawStateWidget(), "Claw State")
 
     def closeEvent(self, e):
-        self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
+        if config['windows']['save-window-positions']:
+            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         e.accept()
 
 #create window with status lights
@@ -302,7 +304,7 @@ class StatusIndicatorWidget(QWidget):
 class RobotStateWidget(QWidget):
     def __init__(self, parent=None):
         super(RobotStateWidget, self).__init__(parent)
-        self.settings = QSettings('QuickStatus', 'Status')
+        self.settings = QSettings('QuickStatus', str(MainWindow.windows))
         self.setWindowTitle(title + ' Robot State')
         self.resize(500,500)
         self.timer = QTimer(self)
@@ -332,6 +334,7 @@ class RobotStateWidget(QWidget):
         qp.translate(cw,ch)
         qp.rotate(self.br)
         self.br += 0.2
+        if config['robot']['base-lock']: self.br = 0
 
         #Base
         rx = rs*2
@@ -358,7 +361,8 @@ class RobotStateWidget(QWidget):
             if i>1: iry = -iry1
             else: iry = iry1
             qp.translate(irx,iry)
-            qp.rotate(wheel_rot[i])
+            if not config['robot']['wheel-lock']: qp.rotate(wheel_rot[i])
+            else: qp.rotate(-self.br)
             #BG Circle
             pen.setStyle(Qt.PenStyle.NoPen)
             qp.setPen(pen)
@@ -407,17 +411,19 @@ class RobotStateWidget(QWidget):
             qp.drawPolygon([QPointF(0,td),QPointF(0,-td),QPointF(sqrt(((td*2)**2)-(td/2)**2),0)])
             qp.translate(cs/2.4,cs*targ_velocities[i])
 
-            qp.rotate(-wheel_rot[i])
+            if not config['robot']['wheel-lock']: qp.rotate(-wheel_rot[i])
+            else: qp.rotate(self.br)
             qp.translate(-irx,-iry)
 
     def closeEvent(self, e):
-        self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
+        if config['windows']['save-window-positions']:
+            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         e.accept()
 
 class ClawStateWidget(QWidget):
     def __init__(self, parent=None):
         super(ClawStateWidget, self).__init__(parent)
-        self.settings = QSettings('QuickStatus', 'Status')
+        self.settings = QSettings('QuickStatus', str(MainWindow.windows))
         self.setWindowTitle(title + ' Claw State')
         self.resize(500,500)
         self.timer = QTimer(self)
@@ -494,6 +500,11 @@ class ClawStateWidget(QWidget):
         qp.translate(0,-self.elev2*500)
         qp.drawRoundedRect(QRectF(-100,0,200,500), 0,0)
 
+    def closeEvent(self, e):
+        if config['windows']['save-window-positions']:
+            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
+        e.accept()
+
 if __name__ == '__main__':
 
     # config
@@ -504,40 +515,31 @@ if __name__ == '__main__':
         print("no config file found. making one for you 🥰")
         config = open(resource_path("assets/config.toml"), "w")
         #setup default values
-        config.write('''[general]
+        config.write('''[windows]
     save-window-positions = true
-
-[status]
-    enabled = false
-    scroll-horizontal = false
-    scroll-vertical = true
-    # Blink speed (seconds)
-    blink-speed = 0.75
-    # Widget refresh rate in Hz
-    update-rate = 100
+    widgets = [ ['status'], ['robot', 'claw'] ]
     
 [tabs]
-    enabled = true
-    tabs = [
-        'claw',
-        'robot',
-        'status'
-    ]
+    align = 'bottom' # Align tab bar to either 'bottom', 'top', 'left', or 'right'
+
+[status]
+    scroll-horizontal = false
+    scroll-vertical = true
+    blink-speed = 0.75 # Blink speed in seconds
+    update-rate = 100 # Widget refresh rate in Hz
 
 [robot]
-    enabled = false
     base-lock = false
     wheel-lock = false
-    # Widget refresh rate in Hz
-    update-rate = 100
+    update-rate = 100 # Widget refresh rate in Hz
 
 [claw]
-    enabled = false
-    update-rate = 10''')
+    update-rate = 100 # Widget refresh rate in Hz''')
         config.close()
 
-    with open(resource_path('assets/config.toml'), 'r') as f:
-        config = toml.load(f)
+    with open(resource_path('assets/config.toml'), 'r') as fa:
+        config = toml.load(fa)
+    #print(toml.dump(['test',['test2','test3']]) as )
 
     # pyqt stuff
     app = QApplication(sys.argv)
