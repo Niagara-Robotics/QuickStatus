@@ -45,8 +45,8 @@ class MainWindow(QMainWindow):
             if len(window) > 1:
                 temp_tabs = []
                 for i in window: temp_tabs.append(i)
-                PagesWindow.tablist = temp_tabs.copy()
-                self.widgets.append(PagesWindow())
+                TabWindow.tablist = temp_tabs.copy()
+                self.widgets.append(TabWindow())
                 if len(self.widgets):
                     self.widgets[-1].show()
             else:
@@ -112,7 +112,7 @@ def restoreWindow(self):
         self.resize(640, 480)
 
 # create window with tabs
-class PagesWindow(QWidget):
+class TabWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.settings = QSettings('QuickStatus', str(MainWindow.windows))
