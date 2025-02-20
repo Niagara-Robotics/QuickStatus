@@ -122,14 +122,17 @@ class PagesWindow(QWidget):
         # create tab widget
         widget = QWidget()
         self.layout = QGridLayout(widget)
-        self.layout.setContentsMargins(0,0,0,5)
         self.tabs = QTabWidget()
-        
-        # align config
-        if config['tabs']['align'] == 'bottom': self.tabs.setTabPosition(self.tabs.TabPosition.South)
-        if config['tabs']['align'] == 'top': self.tabs.setTabPosition(self.tabs.TabPosition.North)
-        if config['tabs']['align'] == 'right': self.tabs.setTabPosition(self.tabs.TabPosition.East)
-        if config['tabs']['align'] == 'left': self.tabs.setTabPosition(self.tabs.TabPosition.West)
+        self.tabs.setTabPosition(getattr(self.tabs.TabPosition, config['tabs']['align']))
+
+        margins = {
+            'North': [0,11,0,0],
+            'East': [0,0,6,0],
+            'South': [0,0,0,6],
+            'West': [6,0,0,0]
+        }
+        margin = margins.get(config['tabs']['align'])
+        self.layout.setContentsMargins(margin[0], margin[1], margin[2], margin[3])
         
         # create tabs
         for i in self.tablist:
@@ -157,12 +160,19 @@ class PagesWindow(QWidget):
         hl = app.palette().color(QPalette.ColorRole.WindowText)
         hl.setAlpha(25)
         hl = hl.name().strip('#')
+        align_css = {
+            'North': 'top',
+            'East': 'right',
+            'South': 'bottom',
+            'West': 'left'
+        }
+        alignment = align_css.get(config['tabs']['align'])
         self.tabs.setStyleSheet(
         f"""
         QTabWidget::pane {{
-        border-bottom: 1px solid;
-        border-color: #33{hl};
-        margin-bottom: 5px;
+            border-{alignment}: 1px solid;
+            border-color: #33{hl};
+            margin-{alignment}: 5px;
         }}
         """)
 
@@ -486,7 +496,7 @@ if __name__ == '__main__':
     data-rate = 5
     
 [tabs]
-    align = 'bottom' # Align tab bar to either 'bottom', 'top', 'left', or 'right'
+    align = 'South' # Align tab bar to either 'North', 'East', 'South', or 'West'
 
 [status]
     scroll-horizontal = false
