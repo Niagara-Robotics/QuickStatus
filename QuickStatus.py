@@ -158,7 +158,6 @@ class TabWindow(QWidget):
         e.accept()
     def changeEvent(self, e):
         hl = app.palette().color(QPalette.ColorRole.WindowText)
-        hl.setAlpha(25)
         hl = hl.name().strip('#')
         align_css = {
             'North': 'top',
@@ -171,7 +170,7 @@ class TabWindow(QWidget):
         f"""
         QTabWidget::pane {{
             border-{alignment}: 1px solid;
-            border-color: #33{hl};
+            border-color: #25{hl};
             margin-{alignment}: 5px;
         }}
         """)
