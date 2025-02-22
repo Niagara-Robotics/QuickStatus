@@ -1,5 +1,6 @@
 .DS_Store
 config.toml
-QuickStatus.spec
 afssets
-convert.py
+test
+venv
+setup.py
