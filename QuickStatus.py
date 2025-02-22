@@ -201,8 +201,8 @@ class StatusIndicatorWidget(QWidget):
         height = size.height()
         #qp.fillRect(self.rect(), QColor(background_colour))
         total_width = 0
-        blink_speed = config['status']['blink-speed']
-        ctime = (time.time() - start_time) % 10
+        blink_speed = config['status']['blink-interval']
+        ctime = (time.time() - start_time) # how long the program has been running
 
         for i in range(self.num_circles):
             x = 4
@@ -212,7 +212,7 @@ class StatusIndicatorWidget(QWidget):
             pen = QPen(dark)
             qp.setPen(pen)
 
-            flash_time = 100
+            flash_time = ctime
             if values[i] == 1: 
                 current_colour = accent_colour
             if values[i] == 2: 
@@ -221,7 +221,7 @@ class StatusIndicatorWidget(QWidget):
                 current_colour = warning_colour
             if values[i] == 4: 
                 current_colour = death_colour
-                flash_time = blink_speed
+                if blink_speed > 0: flash_time = blink_speed*2
             
 
             if i % 2 == 0: 
@@ -491,7 +491,7 @@ if __name__ == '__main__':
 [status]
     scroll-horizontal = false
     scroll-vertical = true
-    blink-speed = 0.75 # Blink speed in seconds
+    blink-interval = 0.2 # Time in seconds for each blink cycle. Set to 0 to disable blinking
 
 [robot]
     base-lock = false
