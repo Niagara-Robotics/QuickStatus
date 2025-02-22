@@ -263,6 +263,9 @@ class RobotStateWidget(QWidget):
     def __init__(self, parent=None):
         super(RobotStateWidget, self).__init__(parent)
         self.settings = QSettings('QuickStatus', str(MainWindow.windows))
+
+        restoreWindow(self)
+
         self.setWindowTitle(title + ' Robot State')
         self.resize(500,500)
 
@@ -389,6 +392,9 @@ class ClawStateWidget(QWidget):
     def __init__(self, parent=None):
         super(ClawStateWidget, self).__init__(parent)
         self.settings = QSettings('QuickStatus', str(MainWindow.windows))
+
+        restoreWindow(self)
+        
         self.setWindowTitle(title + ' Claw State')
         self.resize(500,500)
         self.timer = QTimer(self)
@@ -482,7 +488,7 @@ if __name__ == '__main__':
         #setup default values
         config.write('''[windows]
     save-window-states = true
-    widgets = [ ['status'], ['robot', 'claw'] ]
+    widgets = [ ['status'], ['robot', 'claw'] ] # List of widgets to display. Grouped widgets will be placed into tabs.
     data-rate = 5
     
 [tabs]
