@@ -32,7 +32,6 @@ power_colour = QColor("#47AC25")
 for i in range(100):
     things.append("i am a new object")
     values.append(random.randrange(0,5))
-path = resource_path('assets/icons/mac.png')
 
 # create child windows
 class MainWindow(QMainWindow):
@@ -57,27 +56,6 @@ class MainWindow(QMainWindow):
                 if len(self.widgets): self.widgets[-1].show()
             MainWindow.windows += 1
 
-        '''if config['status']['enabled']: self.w1.show()
-        if config['tabs']['enabled']: self.w2.show()
-        if config['robot']['enabled']: self.w3.show()
-        if config['claw']['enabled']: self.w4.show()'''
-
-        '''widget = QWidget()
-        layout = QGridLayout(widget)
-
-        widget_one = PaintWidget()
-        # or
-        # widget_one.setFixedSize(1000, 1000)
-        # or
-        # widget_one.setMinimumSize(1000, 1000)
-        scroll = QScrollArea(widgetResizable=True)
-        scroll.setWidget(widget_one)
-
-        layout.addWidget(scroll, 0, 0)
-        # layout.addWidget(WidgetTwo(), 1, 1)
-        self.setCentralWidget(widget)
-        self.resize(w, h)'''
-
 # status lights as widget in window
 class StatusWindow(QWidget):
     def __init__(self):
@@ -99,14 +77,14 @@ class StatusWindow(QWidget):
         self.setWindowTitle(title + ' Status Indicators')
 
     def closeEvent(self, e):
-        if config['windows']['save-window-positions']:
+        if config['windows']['save-window-states']:
             self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         e.accept()
 
 # restore window positions
 def restoreWindow(self):
-    windowScreenGeometry = self.settings.value( "windowScreenGeometry" )
-    if windowScreenGeometry and config['windows']['save-window-positions']:
+    windowScreenGeometry = self.settings.value("windowScreenGeometry")
+    if windowScreenGeometry and config['windows']['save-window-states']:
             self.restoreGeometry(windowScreenGeometry)
     else:
         self.resize(640, 480)
@@ -145,6 +123,10 @@ class TabWindow(QWidget):
 
         self.setWindowTitle(title + ' Tabs')
 
+        selectedTab = self.settings.value("selectedTab")
+        if selectedTab and config['windows']['save-window-states']:
+            self.tabs.setCurrentIndex(selectedTab)
+
     def RobotStateTab(self):
         self.tabs.addTab(RobotStateWidget(), "Robot State")
     def StatusTab(self):
@@ -152,10 +134,13 @@ class TabWindow(QWidget):
     def ClawTab(self):
         self.tabs.addTab(ClawStateWidget(), "Claw State")
 
-    def closeEvent(self, e):
-        if config['windows']['save-window-positions']:
-            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
-        e.accept()
+    def keyPressEvent(self, event):
+        if isinstance(event, QKeyEvent):
+            key_text = event.text()
+            if key_text.isnumeric():
+                key_text = (int(key_text)-1) % 10
+                self.tabs.setCurrentIndex(key_text)
+
     def changeEvent(self, e):
         hl = app.palette().color(QPalette.ColorRole.WindowText)
         hl = hl.name().strip('#')
@@ -174,6 +159,12 @@ class TabWindow(QWidget):
             margin-{alignment}: 5px;
         }}
         """)
+
+    def closeEvent(self, e):
+        if config['windows']['save-window-states']:
+            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
+            self.settings.setValue("selectedTab", self.tabs.currentIndex())
+        e.accept()
 
 #create window with status lights
 class StatusIndicatorWidget(QWidget):
@@ -390,7 +381,7 @@ class RobotStateWidget(QWidget):
         if config['robot']['base-lock']: self.base_rot = 0
 
     def closeEvent(self, e):
-        if config['windows']['save-window-positions']:
+        if config['windows']['save-window-states']:
             self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         e.accept()
 
@@ -475,7 +466,7 @@ class ClawStateWidget(QWidget):
         qp.drawRoundedRect(QRectF(-100,0,200,500), 0,0)
 
     def closeEvent(self, e):
-        if config['windows']['save-window-positions']:
+        if config['windows']['save-window-states']:
             self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         e.accept()
 
@@ -490,7 +481,7 @@ if __name__ == '__main__':
         config = open(resource_path("assets/config.toml"), "w")
         #setup default values
         config.write('''[windows]
-    save-window-positions = true
+    save-window-states = true
     widgets = [ ['status'], ['robot', 'claw'] ]
     data-rate = 5
     
@@ -516,7 +507,7 @@ if __name__ == '__main__':
 
     # pyqt stuff
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(path))
+    app.setWindowIcon(QIcon(resource_path('assets/icons/mac.png')))
     if sys.platform == 'win32': app.setStyle('Fusion')
     ex = MainWindow()
     #ex.show()
