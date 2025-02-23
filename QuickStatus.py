@@ -530,7 +530,7 @@ if __name__ == '__main__':
 [claw] # Default settings for Claw widgets
     # There are currently no config options for this widget''')
         config.close()
-    print('Config file successfully created')
+        print('Config file successfully created')
 
     with open(resource_path('assets/config.toml'), 'r') as fa:
         config = toml.load(fa)
