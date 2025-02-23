@@ -4,7 +4,7 @@
         global-hotkeys = true
         align = 'North'
         [[window.widget]] # Defines new widget
-            type = 'robot' # Defines widget type
+            type = 'swerve' # Defines widget type
         [[window.widget]]
             type = 'claw'
 
@@ -22,7 +22,7 @@
     scroll-vertical = true # Enables vertical scrolling through the widget
     blink-interval = 0.2 # Time in seconds for each blink cycle. Set to 0 to disable blinking
 
-[robot] # Default settings for Robot widgets
+[swerve] # Default settings for Swerve widgets
     base-lock = false # Locks base to single rotation
     wheel-lock = false # Locks wheels to single rotation
 
