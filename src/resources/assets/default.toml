@@ -5,21 +5,21 @@
         align = 'North'
         [[window.widget]] # Defines new widget
             type = 'swerve' # Defines widget type
+            base-lock = true
         [[window.widget]]
             type = 'claw'
 
     [[window]]
         [[window.widget]]
             type = 'status'
-            scroll-horizontal = true
+            enable-scroll = true
 
 [tabs] # Default settings for tabs
     global-hotkeys = false # Enables tab switching via hotkeys when the window is not focused
     align = 'South' # Align tab bar to either 'North', 'East', 'South', or 'West'
 
 [status] # Default settings for Status widgets
-    scroll-horizontal = false # Enables horizontal scrolling through the widget
-    scroll-vertical = true # Enables vertical scrolling through the widget
+    enable-scroll = true # Enables vertical scrolling through the widget
     blink-interval = 0.2 # Time in seconds for each blink cycle. Set to 0 to disable blinking
 
 [swerve] # Default settings for Swerve widgets

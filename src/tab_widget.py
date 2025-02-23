@@ -93,5 +93,5 @@ class TabWidget(QWidget):
     def closeEvent(self, e):
         if config['general']['save-window-states']:
             self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
-            self.settings.setValue("selectedTab", self.tabs.currentIndex())
+            self.settings.setValue( "selectedTab", self.tabs.currentIndex() )
         e.accept()

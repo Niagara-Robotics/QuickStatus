@@ -22,7 +22,7 @@ from create_windows import WindowCreator
 if __name__ == '__main__':
     # pyqt stuff
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(resource_path('resources/assets/icons/mac.png')))
+    app.setWindowIcon(QIcon(resource_path('resources/assets/icon/mac.png')))
     if sys.platform == 'win32': app.setStyle('Fusion')
     ex = WindowCreator()
     sys.exit(app.exec())

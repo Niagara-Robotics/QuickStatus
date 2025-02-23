@@ -18,9 +18,14 @@ class StatusScrollWidget(QWidget):
         layout.addWidget(scroll, 0, 0)
         self.setLayout(layout)
 
+        palette = self.palette()
+        dark = palette.color(QPalette.ColorRole.Base).lighter(160)
+        palette.setColor(QPalette.ColorRole.Window, dark)
+        self.setPalette(palette)
+
         self.setWindowTitle('QuickStatus (Status Indicators)')
 
     def closeEvent(self, e):
-        if True:
+        if config['general']['save-window-states']:
             self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         e.accept()
