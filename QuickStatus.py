@@ -13,9 +13,6 @@ def resource_path(relative_path):
     # absolute file paths
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
-
-def on_press(key):
-    if hasattr(key, 'char') and key.char.isnumeric(): print(key.char)
 # setup variables
 start_time = time.time()
 title = 'QuickStatus'
@@ -44,8 +41,10 @@ def copyConfig(original: str, copyto: dict):
 
 # create child windows
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+    def __init__(self):
+        super(MainWindow, self).__init__()
+
+        # create windows
         self.windowNum = 0
         self.widgets = []
         for i in range(len(config['window'])):
@@ -60,6 +59,14 @@ class MainWindow(QMainWindow):
 
             if len(self.widgets): self.widgets[-1].show()
             self.windowNum += 1
+        
+        # start recieving global inputd
+        def sendKeys(key):
+            for i in range(self.windowNum):
+                if isinstance(self.widgets[i], TabWindow): self.widgets[i].on_press(key)
+
+        self.listener = keyboard.Listener(on_press=sendKeys)
+        self.listener.start()
 
 # status lights as widget in window
 class StatusWindow(QWidget):
@@ -134,6 +141,10 @@ class TabWindow(QWidget):
         selectedTab = self.settings.value("selectedTab")
         if selectedTab and config['general']['save-window-states']:
             self.tabs.setCurrentIndex(selectedTab)
+    def on_press(self, key):
+        if self.config['global-hotkeys'] and hasattr(key, 'char') and key.char.isnumeric():
+            key_text = (int(key.char)-1) % 10
+            self.tabs.setCurrentIndex(key_text)
 
     def StatusTab(self, conf):
         self.tabs.addTab(StatusWindow(wid = self.wid, conf = conf), "Status Lights")
@@ -520,7 +531,6 @@ if __name__ == '__main__':
             type = 'claw'
 
     [[window]]
-        global-hotkeys = false
         [[window.widget]]
             type = 'status'
             scroll-horizontal = true
