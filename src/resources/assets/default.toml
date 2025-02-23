@@ -1,0 +1,30 @@
+[general]
+    save-window-states = true # Saves and restores the position and current tab of all windows
+    [[window]] # Defines new window
+        global-hotkeys = true
+        align = 'North'
+        [[window.widget]] # Defines new widget
+            type = 'robot' # Defines widget type
+        [[window.widget]]
+            type = 'claw'
+
+    [[window]]
+        [[window.widget]]
+            type = 'status'
+            scroll-horizontal = true
+
+[tabs] # Default settings for tabs
+    global-hotkeys = false # Enables tab switching via hotkeys when the window is not focused
+    align = 'South' # Align tab bar to either 'North', 'East', 'South', or 'West'
+
+[status] # Default settings for Status widgets
+    scroll-horizontal = false # Enables horizontal scrolling through the widget
+    scroll-vertical = true # Enables vertical scrolling through the widget
+    blink-interval = 0.2 # Time in seconds for each blink cycle. Set to 0 to disable blinking
+
+[robot] # Default settings for Robot widgets
+    base-lock = false # Locks base to single rotation
+    wheel-lock = false # Locks wheels to single rotation
+
+[claw] # Default settings for Claw widgets
+    # There are currently no config options for this widget

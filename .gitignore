@@ -4,3 +4,4 @@ afssets
 test
 venv
 setup.py
+__pycache__
