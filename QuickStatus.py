@@ -1,6 +1,7 @@
 # import stuff
 import sys, os, random, time, toml
 from math import *
+import pynput
 # pyqt6
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
@@ -142,7 +143,7 @@ class TabWindow(QWidget):
         self.tabs.addTab(ClawStateWidget(wid = self.wid), "Claw State")
 
     def keyPressEvent(self, event):
-        if isinstance(event, QKeyEvent):
+        if isinstance(event, QKeyEvent) and self.config['global-hotkeys']:
             key_text = event.text()
             if key_text.isnumeric():
                 key_text = (int(key_text)-1) % 10
@@ -500,6 +501,7 @@ if __name__ == '__main__':
         config.write('''[general]
     save-window-states = true # Saves and restores the position and current tab of all windows
     [[window]] # Defines new window
+        global-hotkeys = true
         align = 'North'
         [[window.widget]] # Defines new widget
             type = 'robot' # Defines widget type
@@ -507,11 +509,13 @@ if __name__ == '__main__':
             type = 'claw'
 
     [[window]]
+        global-hotkeys = false
         [[window.widget]]
             type = 'status'
             scroll-horizontal = true
 
 [tabs] # Default settings for tabs
+    global-hotkeys = false # Enables tab switching via hotkeys when the window is not focused
     align = 'South' # Align tab bar to either 'North', 'East', 'South', or 'West'
 
 [status] # Default settings for Status widgets
