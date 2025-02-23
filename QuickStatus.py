@@ -1,7 +1,7 @@
 # import stuff
 import sys, os, random, time, toml
 from math import *
-import pynput
+from pynput import keyboard
 # pyqt6
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
@@ -14,6 +14,8 @@ def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
+def on_press(key):
+    if hasattr(key, 'char') and key.char.isnumeric(): print(key.char)
 # setup variables
 start_time = time.time()
 title = 'QuickStatus'
@@ -143,7 +145,7 @@ class TabWindow(QWidget):
         self.tabs.addTab(ClawStateWidget(wid = self.wid), "Claw State")
 
     def keyPressEvent(self, event):
-        if isinstance(event, QKeyEvent) and self.config['global-hotkeys']:
+        if isinstance(event, QKeyEvent) and not self.config['global-hotkeys']:
             key_text = event.text()
             if key_text.isnumeric():
                 key_text = (int(key_text)-1) % 10
@@ -159,14 +161,23 @@ class TabWindow(QWidget):
             'West': 'left'
         }
         alignment = align_css.get(self.config['align'])
-        self.tabs.setStyleSheet(
-        f"""
-        QTabWidget::pane {{
-            border-{alignment}: 1px solid;
-            border-color: #25{hl};
-            margin-{alignment}: 5px;
-        }}
-        """)
+        if sys.platform == "darwin":
+            self.tabs.setStyleSheet(
+            f"""
+            QTabWidget::pane {{
+                border-{alignment}: 1px solid;
+                border-color: #25{hl};
+                margin-{alignment}: 5px;
+            }}
+            """)
+        else:
+            self.tabs.setStyleSheet(
+            f"""
+            QTabWidget::pane {{
+                border-{alignment}: 1px solid;
+                border-color: #25{hl};
+            }}
+            """)
 
     def closeEvent(self, e):
         if config['general']['save-window-states']:
