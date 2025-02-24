@@ -63,8 +63,13 @@ class TabWidget(QWidget):
                 self.tabs.setCurrentIndex(key_text)
 
     def changeEvent(self, e):
-        hl = self.palette().color(QPalette.ColorRole.WindowText)
+        pal = self.palette()
+        pal.setColor(self.palette().ColorRole.Window, self.palette().color(self.palette().ColorRole.Light).darker(125))
+        self.setPalette(pal)
+        hl = self.palette().color(self.palette().ColorRole.WindowText)
         hl = hl.name().strip('#')
+        bg = self.palette().color(self.palette().ColorRole.Midlight)
+        bg = bg.name()
         align_css = {
             'North': 'top',
             'East': 'right',
@@ -76,8 +81,9 @@ class TabWidget(QWidget):
             self.tabs.setStyleSheet(
             f"""
             QTabWidget::pane {{
+                background-color: {bg};
                 border-{alignment}: 1px solid;
-                border-color: #25{hl};
+                border-color: #26{hl};
                 margin-{alignment}: 5px;
             }}
             """)
@@ -85,6 +91,7 @@ class TabWidget(QWidget):
             self.tabs.setStyleSheet(
             f"""
             QTabWidget::pane {{
+                background-color: {bg};
                 border-{alignment}: 1px solid;
                 border-color: #25{hl};
             }}

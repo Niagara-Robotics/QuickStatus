@@ -23,7 +23,7 @@ class StatusWidget(QWidget):
     # scrolling setup
     def minimumSizeHint(self):
         if self.config['enable-scroll'] == False: minY = 0
-        else: minY = 100000
+        else: minY = self.height()
 
         return QSize(0, minY)
         
@@ -33,10 +33,10 @@ class StatusWidget(QWidget):
         qp.setRenderHint(QPainter.RenderHint.Antialiasing) # VERY IMPORTANT AND MAKES EVERYTHING BEAUTIFUL ✨
         palette = self.palette()
         #accent_colour = palette.color(QPalette.ColorRole.Accent).lighter(115)
-        background_colour = QPalette().color(QPalette.ColorRole.Window)
-        foreground_colour = palette.color(QPalette.ColorRole.Text)
+        background_colour = QPalette().color(QPalette().ColorRole.Window)
+        foreground_colour = palette.color(palette.ColorRole.Text)
         foreground_colour.setAlpha(255)
-        dark = palette.color(QPalette.ColorRole.Base).lighter(160)
+        dark = palette.color(palette.ColorRole.Base).lighter(160)
         palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
         flash_time = 100
@@ -71,7 +71,7 @@ class StatusWidget(QWidget):
             qp.setPen(pen)
             if i % 2 == 0: 
                 qp.setBrush(Qt.BrushStyle.NoBrush)
-                if (values[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour.darker(115))
+                if (values[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour.darker(110))
             else:
                 qp.setBrush(background_colour)
                 if (values[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour)
@@ -82,7 +82,7 @@ class StatusWidget(QWidget):
             pen.setStyle(Qt.PenStyle.SolidLine)
             qp.setPen(pen)
             if values[i] != 0: qp.setBrush(current_colour)
-            else: qp.setBrush(background_colour)
+            else: qp.setBrush(Qt.BrushStyle.NoBrush)
             if values[i] == 0: qp.setPen(foreground_colour)
             else: qp.setPen(QColor('#FFFFFF'))
             qp.drawEllipse(QRectF(x, y-1, radius, radius))
@@ -93,8 +93,8 @@ class StatusWidget(QWidget):
             font = QFont()
             font.setPointSizeF(13)
             qp.setFont(font)
-            if values[i] == 0: qp.setPen(foreground_colour)
-            else: qp.setPen(QColor('#FFFFFF'))
+            if values[i] != 0 and (ctime % flash_time) <= flash_time/2: qp.setPen(QColor('#FFFFFF'))
+            else: qp.setPen(foreground_colour)
             font_metrics = QFontMetrics(font)
             text_width = font_metrics.horizontalAdvance(text)
             if text_width > total_width: total_width = text_width
@@ -105,4 +105,4 @@ class StatusWidget(QWidget):
             else:
                 qp.drawText(text_x, text_y, text)
 
-        self.setMaximumHeight(len(things)*27 + 8)
+        self.setMinimumHeight(len(things)*27 + 8)
