@@ -1,8 +1,9 @@
-from common import *
-from status_scroll_widget import StatusScrollWidget
-from swerve_widget import SwerveWidget
-from claw_widget import ClawWidget
-from tab_widget import TabWidget
+from utils.imports import *
+from utils.generic import config, copyConfig
+from widgets.status_scroll import StatusScrollWidget
+from widgets.swerve import SwerveWidget
+from widgets.claw import ClawWidget
+from widgets.tab import TabWidget
 
 from pynput import keyboard
 

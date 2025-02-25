@@ -1,4 +1,5 @@
-from common import *
+from utils.imports import *
+from utils.generic import restoreWindow, closeEvent, widget_refresh, colours
 from math import sqrt
 
 class SwerveWidget(QWidget):
@@ -16,7 +17,7 @@ class SwerveWidget(QWidget):
         # Adjust the timer interval to match the monitor's refresh rate
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
-        self.timer.start(refresh)
+        self.timer.start(widget_refresh)
         self.base_rot = 45
         self.wheel_rot = [15,-5,86,-123]
         self.velocities = [0.59,-0.4,1,-0.1]
@@ -33,7 +34,7 @@ class SwerveWidget(QWidget):
         background_colour = palette.color(QPalette.ColorRole.Window)
         foreground_colour = palette.color(QPalette.ColorRole.Text)
         foreground_colour.setAlpha(255)
-        colour_chart = [foreground_colour, accent_colour, caution_colour, warning_colour, death_colour]
+        colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
         size = self.size()
         w = size.width()
         h = size.height()
@@ -100,10 +101,10 @@ class SwerveWidget(QWidget):
             qp.drawChord(QRectF(-cs,-cs,cs*2,cs*2),(la*8)+(1440),((180-la)*16))
             qp.drawChord(QRectF(-cs,-cs,cs*2,cs*2),(-la*8)+(1440),(-(180-la)*16))
             
-            qp.setPen(QPen(velocity_colour, bd, cap=Qt.PenCapStyle.FlatCap))
+            qp.setPen(QPen(colours.velocity_colour, bd, cap=Qt.PenCapStyle.FlatCap))
             qp.drawLine(QLineF(-bd2, 0, -bd2, -cs*self.velocities[i]))
             
-            qp.setPen(QPen(power_colour, bd, cap=Qt.PenCapStyle.FlatCap))
+            qp.setPen(QPen(colours.power_colour, bd, cap=Qt.PenCapStyle.FlatCap))
             qp.drawLine(QLineF(bd2, 0, bd2, -cs*self.powers[i]))
             
             #Circle
@@ -128,6 +129,4 @@ class SwerveWidget(QWidget):
         if self.config['base-lock']: self.base_rot = 0
 
     def closeEvent(self, e):
-        if config['general']['save-window-states']:
-            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
-        e.accept()
+        closeEvent(self, e)

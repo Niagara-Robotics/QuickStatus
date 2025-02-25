@@ -1,7 +1,8 @@
-from common import *
-from status_scroll_widget import StatusScrollWidget
-from swerve_widget import SwerveWidget
-from claw_widget import ClawWidget
+from utils.imports import *
+from utils.generic import restoreWindow, copyConfig, config, closeEvent
+from widgets.status_scroll import StatusScrollWidget
+from widgets.swerve import SwerveWidget
+from widgets.claw import ClawWidget
 
 class TabWidget(QWidget):
     def __init__(self, wid, conf, tabs):
@@ -98,7 +99,4 @@ class TabWidget(QWidget):
             """)
 
     def closeEvent(self, e):
-        if config['general']['save-window-states']:
-            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
-            self.settings.setValue( "selectedTab", self.tabs.currentIndex() )
-        e.accept()
+        closeEvent(self, e)

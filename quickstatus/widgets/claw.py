@@ -1,4 +1,5 @@
-from common import *
+from utils.imports import *
+from utils.generic import closeEvent, restoreWindow, colours, widget_refresh
 
 class ClawWidget(QWidget):
     def __init__(self, wid):
@@ -12,8 +13,8 @@ class ClawWidget(QWidget):
         self.resize(500,500)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
-        self.timer.start(refresh)
-        claw = open(resource_path('resources/assets/widget/claw/claw.coords'))
+        self.timer.start(widget_refresh)
+        claw = open('resources/widgets/claw/claw.coords')
         self.clawv = []
         clawl = []
         b = 0
@@ -30,7 +31,7 @@ class ClawWidget(QWidget):
         background_colour = palette.color(QPalette.ColorRole.Window)
         foreground_colour = palette.color(QPalette.ColorRole.Text)
         foreground_colour.setAlpha(255)
-        colour_chart = [foreground_colour, accent_colour, caution_colour, warning_colour, death_colour]
+        colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
         size = self.size()
         w = size.width()
         h = size.height()
@@ -65,7 +66,7 @@ class ClawWidget(QWidget):
 
         qp.restore()
         qp.save()
-            # arm line
+        # arm line
         qp.setPen(QPen(background_colour, 16))
         qp.scale(scale,scale)
         qp.translate(cw/scale,ch/scale)
@@ -85,6 +86,4 @@ class ClawWidget(QWidget):
         qp.drawRoundedRect(QRectF(-100,0,200,500), 0,0)
 
     def closeEvent(self, e):
-        if config['general']['save-window-states']:
-            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
-        e.accept()
+        closeEvent(self, e)

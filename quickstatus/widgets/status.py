@@ -1,4 +1,5 @@
-from common import *
+from utils.imports import *
+from utils.generic import widget_refresh, colours
 from time import time
 
 things = ["Not working", "Working fine", "Proceed with caution", "Warning: maybe bad", "Deep trouble"]
@@ -7,7 +8,6 @@ for i in range(5):
     things.append("Test")
     values.append(0)
 
-refresh = 10
 start_time = time()
 
 class StatusWidget(QWidget):
@@ -17,7 +17,7 @@ class StatusWidget(QWidget):
         self.num_circles = len(things)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
-        self.timer.start(refresh)
+        self.timer.start(widget_refresh)
         self.config = conf
 
     # scrolling setup
@@ -58,13 +58,13 @@ class StatusWidget(QWidget):
 
             flash_time = ctime
             if values[i] == 1: 
-                current_colour = accent_colour
+                current_colour = colours.accent_colour
             if values[i] == 2: 
-                current_colour = caution_colour
+                current_colour = colours.caution_colour
             if values[i] == 3: 
-                current_colour = warning_colour
+                current_colour = colours.warning_colour
             if values[i] == 4: 
-                current_colour = death_colour
+                current_colour = colours.death_colour
                 if blink_speed > 0: flash_time = blink_speed*2
             
             pen.setStyle(Qt.PenStyle.NoPen)

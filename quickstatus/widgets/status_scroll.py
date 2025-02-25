@@ -1,5 +1,6 @@
-from status_widget import StatusWidget
-from common import *
+from widgets.status import StatusWidget
+from utils.imports import *
+from utils.generic import restoreWindow, closeEvent
 
 class StatusScrollWidget(QWidget):
     def __init__(self, wid, conf):
@@ -21,6 +22,4 @@ class StatusScrollWidget(QWidget):
         self.setWindowTitle('QuickStatus (Status Indicators)')
 
     def closeEvent(self, e):
-        if config['general']['save-window-states']:
-            self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
-        e.accept()
+        closeEvent(self, e)

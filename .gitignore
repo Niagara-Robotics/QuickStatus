@@ -1,7 +1,7 @@
 .DS_Store
 config.toml
 afssets
-test
+tests
 venv
 setup.py
 __pycache__
