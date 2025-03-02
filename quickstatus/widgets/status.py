@@ -4,8 +4,6 @@ from time import time
 from utils.network_tables import datatable, NetworkTables
 from math import ceil
 
-#things = ["Not working", "Working fine", "Proceed with caution", "Warning: maybe bad", "Deep trouble"]
-#values = [0,1,2,3,4]
 start_time = time()
 
 class StatusWidget(QWidget):
@@ -28,43 +26,44 @@ class StatusWidget(QWidget):
     def paintEvent(self, event):
         qp = QPainter(self)
         qp.setRenderHint(QPainter.RenderHint.Antialiasing) # VERY IMPORTANT AND MAKES EVERYTHING BEAUTIFUL ✨
+        
         palette = self.palette()
-        #accent_colour = palette.color(QPalette.ColorRole.Accent).lighter(115)
         background_colour = QPalette().color(QPalette().ColorRole.Window)
         foreground_colour = palette.color(palette.ColorRole.Text)
         foreground_colour.setAlpha(255)
         dark = palette.color(palette.ColorRole.Base).lighter(160)
         palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
+
         flash_time = 100
-        qp.setPen(foreground_colour)
+
         size = self.size()
         width = size.width()
         height = size.height()
-        #qp.fillRect(self.rect(), QColor(background_colour))
         total_width = 0
         blink_speed = self.config['blink-interval']
         ctime = (time() - start_time) # how long the program has been running
 
         colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
         b = 0
-        #print(connected)
+
         table = datatable[config['status']['network-table']]
+
         if NetworkTables.inst.isConnected():
             for i in range(ceil(height/27)):
                 radius = 16
-                y = (i * 27) + 10
+                y = (i * 27) + 12
                 qp.setPen(Qt.PenStyle.NoPen)
                 if i % 2 == 0: 
                     qp.setBrush(Qt.BrushStyle.NoBrush)
                 else:
                     qp.setBrush(background_colour)
-                r1 = QRectF(4, y-5, width-8, radius + 9)
+                r1 = QRectF(12, y-5, width-24, radius + 9)
                 qp.drawRoundedRect(r1, 6, 6)
             for i in table:
                 if type(table[i]) == int:
-                    x = 12
-                    y = (b * 27) + 10
+                    x = 20
+                    y = (b * 27) + 12
                     radius = 16
 
                     pen = QPen(Qt.PenStyle.NoPen)
@@ -80,7 +79,7 @@ class StatusWidget(QWidget):
                         if b <= len(table) and (table[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour.darker(110))
                     else:
                         if b <= len(table) and (table[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour)
-                    r1 = QRectF(4, y-5, width-8, radius + 9)
+                    r1 = QRectF(12, y-5, width-24, radius + 9)
                     qp.drawRoundedRect(r1, 6, 6)
                     
                     pen = QPen(foreground_colour)
