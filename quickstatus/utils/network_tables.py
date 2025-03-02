@@ -40,9 +40,9 @@ class NetworkTables():
                 if len(value) % 2 == 0:
                     temp = []
                     for i in range(0, len(value), 2):
-                        temp.append(degrees(value[i+1]))
+                        temp.append(-degrees(value[i+1]))
                     value = temp
-            print(f"({path}) Value updated: {topic} = {value}")
+            #print(f"({path}) Value updated: {topic} = {value}")
             datatable[path][topic] = value
         
         def topic_removed(event):
@@ -52,7 +52,7 @@ class NetworkTables():
             path = "".join(path)
             topic = event.data.topic.getName().split("/")[-1]
             inst.getTable("fart").getNumber
-            print(f"({path}) Topic removed: {topic}")
+            #print(f"({path}) Topic removed: {topic}")
             datatable[path].pop(topic)
 
         def connected(event):

@@ -52,7 +52,7 @@ class SwerveWidget(QWidget):
         if NetworkTables.inst.isConnected() and 'module_positions' in wheels and 'odometry_pose' in base:
             base = base['odometry_pose']
             wheels = wheels['module_positions']
-            self.base_rot = degrees(base[2])
+            self.base_rot = -degrees(base[2])
             self.wheel_rot = wheels
 
             # Rotate base

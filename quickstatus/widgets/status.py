@@ -61,7 +61,7 @@ class StatusWidget(QWidget):
                 r1 = QRectF(12, y-5, width-24, radius + 9)
                 qp.drawRoundedRect(r1, 6, 6)
             for i in table:
-                if type(table[i]) == int:
+                if type(table[i]) == int and table[i] <= 4:
                     x = 20
                     y = (b * 27) + 12
                     radius = 16
