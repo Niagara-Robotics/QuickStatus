@@ -1,0 +1,41 @@
+[general]
+    save-window-states = true # Saves and restores the position and current tab of all windows
+    [[window]] # Defines new window
+        global-hotkeys = true
+        align = 'North'
+        [[window.widget]] # Defines new widget
+            type = 'claw' # Defines widget type
+            base-lock = false
+        [[window.widget]]
+            type = 'status'
+
+    [[window]]
+        [[window.widget]]
+            type = 'claw'
+            enable-scroll = true
+    [[window]]
+        [[window.widget]]
+            type = 'swerve'
+            enable-scroll = true
+
+[network]
+    address = "localhost" # Use either IP address or team number
+    ds-client = false # no clue what this does lmao
+
+[tabs] # Default settings for tabs
+    global-hotkeys = false # Enables tab switching via hotkeys when the window is not focused
+    align = 'South' # Align tab bar to either 'North', 'East', 'South', or 'West'
+
+[status] # Default settings for Status widgets
+    enable-scroll = true # Enables vertical scrolling through the widget
+    blink-interval = 0.2 # Time in seconds for each blink cycle. Set to 0 to disable blinking
+    network-table = "FMSInfo"
+
+[swerve] # Default settings for Swerve widgets
+    base-lock = false # Locks base to single rotation
+    wheel-lock = false # Locks wheels to single rotation
+    base-table = "tracking"
+    wheel-table = "swerve"
+
+[claw] # Default settings for Claw widgets
+    network-table = ""
