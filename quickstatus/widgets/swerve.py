@@ -35,7 +35,7 @@ class SwerveWidget(QWidget):
         foreground_colour = palette.color(palette.ColorRole.Text)
         foreground_colour.setAlpha(255)
         dark = palette.color(palette.ColorRole.Base).lighter(160)
-        palette.setColor(QPalette.ColorRole.Window, dark)
+        if sys.platform == 'darwin': palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
         colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
         size = self.size()

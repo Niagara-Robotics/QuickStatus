@@ -7,11 +7,11 @@
             type = 'claw' # Defines widget type
             base-lock = false
         [[window.widget]]
-            type = 'status'
+            type = 'swerve'
 
     [[window]]
         [[window.widget]]
-            type = 'claw'
+            type = 'status'
             enable-scroll = true
     [[window]]
         [[window.widget]]

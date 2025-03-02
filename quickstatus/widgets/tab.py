@@ -18,6 +18,8 @@ class TabWidget(QWidget):
         self.layout = QGridLayout(widget)
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(getattr(self.tabs.TabPosition, self.config['align']))
+        self.setBackgroundRole(QPalette().ColorRole.Base)
+        self.setAutoFillBackground(True)
 
         margins = {
             'North': [0,11,0,0],
@@ -71,7 +73,8 @@ class TabWidget(QWidget):
         self.setPalette(pal)
         hl = self.palette().color(self.palette().ColorRole.WindowText)
         hl = hl.name().strip('#')
-        bg = self.palette().color(self.palette().ColorRole.Base).lighter(160)
+        bg = QPalette().color(QPalette().ColorRole.Window)
+        if sys.platform == 'darwin': bg = self.palette().color(self.palette().ColorRole.Base).lighter(160)
         bg = bg.name()
         align_css = {
             'North': 'top',
@@ -91,14 +94,12 @@ class TabWidget(QWidget):
             }}
             """)
         else:
-            self.tabs.setStyleSheet(
-            f"""
-            QTabWidget::pane {{
-                background-color: {bg};
-                border-{alignment}: 1px solid;
-                border-color: #25{hl};
-            }}
-            """)
+            palette = self.tabs.palette()
+            background_colour = QPalette().color(QPalette().ColorRole.Window).darker(120)
+            palette.setColor(QPalette.ColorRole.Button, background_colour)
+            palette.setColor(QPalette.ColorRole.Window, background_colour)
+
+            self.tabs.setPalette(palette)
 
     def closeEvent(self, e):
         closeEvent(self, e)
