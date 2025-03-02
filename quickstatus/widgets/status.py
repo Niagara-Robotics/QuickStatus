@@ -1,20 +1,17 @@
 from utils.imports import *
-from utils.generic import widget_refresh, colours
+from utils.generic import widget_refresh, colours, config
 from time import time
+from utils.network_tables import datatable, NetworkTables
+from math import ceil
 
-things = ["Not working", "Working fine", "Proceed with caution", "Warning: maybe bad", "Deep trouble"]
-values = [0,1,2,3,4]
-for i in range(5): 
-    things.append("Test")
-    values.append(0)
-
+#things = ["Not working", "Working fine", "Proceed with caution", "Warning: maybe bad", "Deep trouble"]
+#values = [0,1,2,3,4]
 start_time = time()
 
 class StatusWidget(QWidget):
         
     def __init__(self, conf):
         super(StatusWidget, self).__init__()
-        self.num_circles = len(things)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
@@ -49,60 +46,85 @@ class StatusWidget(QWidget):
         blink_speed = self.config['blink-interval']
         ctime = (time() - start_time) # how long the program has been running
 
-        for i in range(self.num_circles):
-            x = 12
-            y = (i * 27) + 10
-            radius = 16
+        colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
+        b = 0
+        #print(connected)
+        table = datatable[config['status']['network-table']]
+        if NetworkTables.inst.isConnected():
+            for i in range(ceil(height/27)):
+                radius = 16
+                y = (i * 27) + 10
+                qp.setPen(Qt.PenStyle.NoPen)
+                if i % 2 == 0: 
+                    qp.setBrush(Qt.BrushStyle.NoBrush)
+                else:
+                    qp.setBrush(background_colour)
+                r1 = QRectF(4, y-5, width-8, radius + 9)
+                qp.drawRoundedRect(r1, 6, 6)
+            for i in table:
+                if type(table[i]) == int:
+                    x = 12
+                    y = (b * 27) + 10
+                    radius = 16
 
-            pen = QPen(Qt.PenStyle.NoPen)
+                    pen = QPen(Qt.PenStyle.NoPen)
 
-            flash_time = ctime
-            if values[i] == 1: 
-                current_colour = colours.accent_colour
-            if values[i] == 2: 
-                current_colour = colours.caution_colour
-            if values[i] == 3: 
-                current_colour = colours.warning_colour
-            if values[i] == 4: 
-                current_colour = colours.death_colour
-                if blink_speed > 0: flash_time = blink_speed*2
-            
-            pen.setStyle(Qt.PenStyle.NoPen)
-            qp.setPen(pen)
-            if i % 2 == 0: 
-                qp.setBrush(Qt.BrushStyle.NoBrush)
-                if (values[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour.darker(110))
-            else:
-                qp.setBrush(background_colour)
-                if (values[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour)
-            r1 = QRectF(4, y-5, width-8, radius + 9)
-            qp.drawRoundedRect(r1, 6, 6)
-            
-            pen = QPen(foreground_colour)
-            pen.setStyle(Qt.PenStyle.SolidLine)
-            qp.setPen(pen)
-            if values[i] != 0: qp.setBrush(current_colour)
-            else: qp.setBrush(Qt.BrushStyle.NoBrush)
-            if values[i] == 0: qp.setPen(foreground_colour)
-            else: qp.setPen(QColor('#FFFFFF'))
-            qp.drawEllipse(QRectF(x, y-1, radius, radius))
+                    flash_time = ctime
+                    current_colour = colour_chart[table[i]]
+                    if table[i] == 4 and blink_speed > 0: flash_time = blink_speed*2
+                    
+                    pen.setStyle(Qt.PenStyle.NoPen)
+                    qp.setPen(pen)
+                    qp.setBrush(Qt.BrushStyle.NoBrush)
+                    if b % 2 == 0: 
+                        if b <= len(table) and (table[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour.darker(110))
+                    else:
+                        if b <= len(table) and (table[i] != 0) and (ctime % flash_time) <= flash_time/2: qp.setBrush(current_colour)
+                    r1 = QRectF(4, y-5, width-8, radius + 9)
+                    qp.drawRoundedRect(r1, 6, 6)
+                    
+                    pen = QPen(foreground_colour)
+                    pen.setStyle(Qt.PenStyle.SolidLine)
+                    qp.setPen(pen)
 
-            text = things[i]
-            text_x = x + radius + 6
-            text_y = y+12
+                    if table[i] != 0: 
+                        qp.setBrush(current_colour)
+                        qp.setPen(QColor('#FFFFFF'))
+                    else: 
+                        qp.setBrush(Qt.BrushStyle.NoBrush)
+                        qp.setPen(foreground_colour)
+
+                    qp.drawEllipse(QRectF(x, y-1, radius, radius))
+
+                    text = i
+                    text_x = x + radius + 6
+                    text_y = y+12
+                    font = QFont()
+                    font.setPointSizeF(13)
+                    qp.setFont(font)
+                    if table[i] != 0 and (ctime % flash_time) <= flash_time/2: qp.setPen(QColor('#FFFFFF'))
+                    else: qp.setPen(foreground_colour)
+                    font_metrics = QFontMetrics(font)
+                    text_width = font_metrics.horizontalAdvance(text)
+                    if text_width > total_width: total_width = text_width
+
+                    if text_width > width-45:
+                        truncated_text = font_metrics.elidedText(text, Qt.TextElideMode.ElideRight, width-45)
+                        qp.drawText(QPointF(text_x, text_y), truncated_text)
+                    else:
+                        qp.drawText(text_x, text_y, text)
+                    
+                    b += 1
+
+            self.setMinimumHeight(b*27 + 8)
+        else:
+            qp.setPen(foreground_colour)
             font = QFont()
-            font.setPointSizeF(13)
+            font.setPointSizeF(16)
             qp.setFont(font)
-            if values[i] != 0 and (ctime % flash_time) <= flash_time/2: qp.setPen(QColor('#FFFFFF'))
-            else: qp.setPen(foreground_colour)
+            text = "NetworkTable not connected"
             font_metrics = QFontMetrics(font)
-            text_width = font_metrics.horizontalAdvance(text)
-            if text_width > total_width: total_width = text_width
-
-            if text_width > width-45:
-                truncated_text = font_metrics.elidedText(text, Qt.TextElideMode.ElideRight, width-45)
-                qp.drawText(QPointF(text_x, text_y), truncated_text)
-            else:
-                qp.drawText(text_x, text_y, text)
-
-        self.setMinimumHeight(len(things)*27 + 8)
+            text_width = font_metrics.horizontalAdvance(text)/2
+            text_height = font_metrics.height()
+            qp.drawText(QPointF(width/2-text_width, height/2+text_height/4), text)
+            self.setMinimumHeight(text_height)

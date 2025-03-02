@@ -1,4 +1,5 @@
 from utils.imports import *
+import toml
 
 widget_refresh = 10
 

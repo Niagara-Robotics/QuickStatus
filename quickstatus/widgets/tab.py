@@ -65,11 +65,11 @@ class TabWidget(QWidget):
 
     def changeEvent(self, e):
         pal = self.palette()
-        pal.setColor(self.palette().ColorRole.Window, self.palette().color(self.palette().ColorRole.Light).darker(125))
+        pal.setColor(self.palette().ColorRole.Window, self.palette().color(self.palette().ColorRole.Light).darker(115))
         self.setPalette(pal)
         hl = self.palette().color(self.palette().ColorRole.WindowText)
         hl = hl.name().strip('#')
-        bg = self.palette().color(self.palette().ColorRole.Midlight)
+        bg = self.palette().color(self.palette().ColorRole.Base).lighter(160)
         bg = bg.name()
         align_css = {
             'North': 'top',
