@@ -1,6 +1,7 @@
 from utils.imports import *
 from utils.generic import restoreWindow, copyConfig, config, closeEvent
 from widgets.status_scroll import StatusScrollWidget
+from widgets.status import StatusWidget
 from widgets.swerve import SwerveWidget
 from widgets.claw import ClawWidget
 
@@ -11,8 +12,6 @@ class TabWidget(QWidget):
         self.settings = QSettings('QuickStatus', str(self.wid))
         self.config = conf
         self.tablist = tabs
-
-        restoreWindow(self)
 
         # create tab widget
         widget = QWidget()
@@ -42,6 +41,9 @@ class TabWidget(QWidget):
         selectedTab = self.settings.value("selectedTab")
         if selectedTab and config['general']['save-window-states']:
             self.tabs.setCurrentIndex(selectedTab)
+        
+        restoreWindow(self)
+
     def on_press(self, key):
         if self.config['global-hotkeys'] and hasattr(key, 'char') and key.char.isnumeric():
             key_text = (int(key.char)-1) % 10

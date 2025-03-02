@@ -18,6 +18,11 @@ class StatusScrollWidget(QWidget):
         scroll.setWidget(StatusWidget(conf))
         layout.addWidget(scroll, 0, 0)
         self.setLayout(layout)
+        self.setStyleSheet('''
+                           QScrollArea {
+                                border: 0px;
+                           }
+                           ''')
 
         self.setWindowTitle('QuickStatus (Status Indicators)')
 

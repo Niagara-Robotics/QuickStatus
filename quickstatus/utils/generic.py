@@ -31,9 +31,8 @@ def closeEvent(self, e):
     e.accept()
 
 def restoreWindow(self):
-    config = getConfig()
     windowScreenGeometry = self.settings.value("windowScreenGeometry")
     if windowScreenGeometry and config['general']['save-window-states']:
-            self.restoreGeometry(windowScreenGeometry)
+        self.restoreGeometry(windowScreenGeometry)
     else:
         self.resize(640, 480)

@@ -10,7 +10,6 @@ class ClawWidget(QWidget):
         restoreWindow(self)
 
         self.setWindowTitle('QuickStatus (Claw State)')
-        self.resize(500,500)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
@@ -28,9 +27,13 @@ class ClawWidget(QWidget):
         qp = QPainter(self)
         qp.setRenderHint(QPainter.RenderHint.Antialiasing) # VERY IMPORTANT AND MAKES EVERYTHING BEAUTIFUL ✨
         palette = self.palette()
-        background_colour = palette.color(QPalette.ColorRole.Window)
-        foreground_colour = palette.color(QPalette.ColorRole.Text)
+        palette = self.palette()
+        background_colour = QPalette().color(QPalette().ColorRole.Window)
+        foreground_colour = palette.color(palette.ColorRole.Text)
         foreground_colour.setAlpha(255)
+        dark = palette.color(palette.ColorRole.Base).lighter(160)
+        palette.setColor(QPalette.ColorRole.Window, dark)
+        self.setPalette(palette)
         colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
         size = self.size()
         w = size.width()
