@@ -4,7 +4,7 @@
         global-hotkeys = true
         align = 'North'
         [[window.widget]] # Defines new widget
-            type = 'claw' # Defines widget type
+            type = 'lift' # Defines widget type
             base-lock = false
         [[window.widget]]
             type = 'swerve'
@@ -37,5 +37,5 @@
     base-table = "tracking"
     wheel-table = "swerve"
 
-[claw] # Default settings for Claw widgets
+[lift] # Default settings for Lift widgets
     network-table = ""

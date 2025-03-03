@@ -3,7 +3,7 @@ from utils.generic import restoreWindow, copyConfig, config, closeEvent
 from widgets.status_scroll import StatusScrollWidget
 from widgets.status import StatusWidget
 from widgets.swerve import SwerveWidget
-from widgets.claw import ClawWidget
+from widgets.lift import LiftWidget
 
 class TabWidget(QWidget):
     def __init__(self, wid, conf, tabs):
@@ -34,7 +34,7 @@ class TabWidget(QWidget):
         for i in self.tablist:
             if i['type'] == 'status': self.status_tab(conf = copyConfig('status', i))
             if i['type'] == 'swerve': self.swerve_tab(conf = copyConfig('swerve', i))
-            if i['type'] == 'claw': self.claw_tab()
+            if i['type'] == 'lift': self.lift_tab()
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
@@ -57,8 +57,8 @@ class TabWidget(QWidget):
     def swerve_tab(self, conf):
         self.tabs.addTab(SwerveWidget(wid = self.wid, conf = conf), "Swerve State")
 
-    def claw_tab(self):
-        self.tabs.addTab(ClawWidget(wid = self.wid), "Claw State")
+    def lift_tab(self):
+        self.tabs.addTab(LiftWidget(wid = self.wid), "Lift State")
 
     def keyPressEvent(self, event):
         if isinstance(event, QKeyEvent) and not self.config['global-hotkeys']:

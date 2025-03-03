@@ -2,7 +2,7 @@ from utils.imports import *
 from utils.generic import config, copyConfig
 from widgets.status_scroll import StatusScrollWidget
 from widgets.swerve import SwerveWidget
-from widgets.claw import ClawWidget
+from widgets.lift import LiftWidget
 from widgets.tab import TabWidget
 
 from pynput import keyboard
@@ -22,7 +22,7 @@ class WindowCreator(QMainWindow):
                 widget = window[0]['type']
                 if widget == 'status': self.widgets.append(StatusScrollWidget(wid = self.windowNum, conf = copyConfig('status', window[0])))
                 if widget == 'swerve': self.widgets.append(SwerveWidget(wid = self.windowNum, conf = copyConfig('swerve', window[0])))
-                if widget == 'claw': self.widgets.append(ClawWidget(wid = self.windowNum))
+                if widget == 'lift': self.widgets.append(LiftWidget(wid = self.windowNum))
 
             if len(self.widgets): self.widgets[-1].show()
             self.windowNum += 1

@@ -19,7 +19,7 @@ class NetworkTables():
         tables['status'] = "/" + config['status']['network-table']
         tables['swerve-base'] = config['swerve']['base-table']
         tables['swerve-wheel'] = config['swerve']['wheel-table']
-        #tables['claw'] = inst.getTable(config['claw']['network-table'])
+        #tables['lift'] = inst.getTable(config['lift']['network-table'])
 
         address = config['network']['address']
         if isinstance(address, str): inst.setServer(address)

@@ -1,27 +1,27 @@
 from utils.imports import *
 from utils.generic import closeEvent, restoreWindow, colours, widget_refresh
 
-class ClawWidget(QWidget):
+class LiftWidget(QWidget):
     def __init__(self, wid):
-        super(ClawWidget, self).__init__()
+        super(LiftWidget, self).__init__()
         self.wid = wid
         self.settings = QSettings('QuickStatus', str(self.wid))
 
         restoreWindow(self)
 
-        self.setWindowTitle('QuickStatus (Claw State)')
+        self.setWindowTitle('QuickStatus (Lift State)')
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
-        claw = open('resources/widgets/claw/claw.coords')
-        self.clawv = []
-        clawl = []
+        lift = open('resources/widgets/lift/lift.coords')
+        self.liftv = []
+        liftl = []
         b = 0
-        for i in claw:
-            clawl.append(i.strip("\n"))
-            self.clawv.append(QPointF(float(clawl[b].split(", ")[0]), float(clawl[b].split(", ")[1])))
+        for i in lift:
+            liftl.append(i.strip("\n"))
+            self.liftv.append(QPointF(float(liftl[b].split(", ")[0]), float(liftl[b].split(", ")[1])))
             b += 1
-        claw.close()
+        lift.close()
 
     def paintEvent(self, event):
         qp = QPainter(self)
@@ -43,7 +43,7 @@ class ClawWidget(QWidget):
         qp.setBrush(foreground_colour)
         qp.setPen(QPen(foreground_colour, 8))
         qp.save()
-        claw = QPolygonF(self.clawv)
+        lift = QPolygonF(self.liftv)
 
         scale = cw/500
 
@@ -60,7 +60,7 @@ class ClawWidget(QWidget):
         qp.translate(0,-self.elev2*500+500-self.elev3*500)
         qp.rotate(self.arm)
         qp.translate(irx1,iry1*2) # rotate from middle bottom
-        qp.drawPolygon(claw)
+        qp.drawPolygon(lift)
         qp.setPen(QPen(foreground_colour, 8))
         qp.setBrush(background_colour)
         qp.drawEllipse(QPointF(-irx1,-iry1*2),25,25)
