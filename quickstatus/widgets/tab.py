@@ -48,7 +48,7 @@ class TabWidget(QWidget):
         restoreWindow(self)
 
     def on_press(self, key):
-        if self.config['global-hotkeys'] and hasattr(key, 'char') and key.char.isnumeric():
+        if self.config['global-hotkeys'] and hasattr(key, 'char') and hasattr(key.char, 'isNumeric') and  key.char.isnumeric():
             key_text = (int(key.char)-1) % 10
             self.tabs.setCurrentIndex(key_text)
 
