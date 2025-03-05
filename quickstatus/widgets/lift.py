@@ -2,10 +2,11 @@ from utils.imports import *
 from utils.generic import closeEvent, restoreWindow, colours, widget_refresh
 
 class LiftWidget(QWidget):
-    def __init__(self, wid):
+    def __init__(self, wid, conf):
         super(LiftWidget, self).__init__()
         self.wid = wid
         self.settings = QSettings('QuickStatus', str(self.wid))
+        self.config = conf
 
         restoreWindow(self)
 

@@ -11,6 +11,7 @@ class StatusScrollWidget(QWidget):
 
         restoreWindow(self)
 
+        self.setWindowTitle('QuickStatus (Status Lights)')
         widget = QWidget()
         layout = QGridLayout(widget)
         layout.setContentsMargins(0,0,0,0)
@@ -18,13 +19,13 @@ class StatusScrollWidget(QWidget):
         scroll.setWidget(StatusWidget(conf))
         layout.addWidget(scroll, 0, 0)
         self.setLayout(layout)
-        self.setStyleSheet('''
-                           QScrollArea {
-                                border: 0px;
-                           }
-                           ''')
-
-        self.setWindowTitle('QuickStatus (Status Indicators)')
+        self.setStyleSheet(
+            '''
+            background: transparent;
+            QScrollArea {
+                border: 0px;
+            }
+            ''')
 
     def closeEvent(self, e):
         closeEvent(self, e)

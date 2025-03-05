@@ -52,12 +52,14 @@ class SwerveWidget(QWidget):
         if NetworkTables.inst.isConnected() and 'module_positions' in wheels and 'odometry_pose' in base:
             base = base['odometry_pose']
             wheels = wheels['module_positions']
-            self.base_rot = -degrees(base[2])
-            self.wheel_rot = wheels
+            if not self.config['base-lock']: self.base_rot = -degrees(base[2])
+            else: self.base_rot = 0
+            if not self.config['wheel-lock']: self.wheel_rot = wheels
+            else: self.wheel_rot = [0,0,0,0]
 
             # Rotate base
             qp.translate(cw,ch)
-            qp.rotate(self.base_rot)
+            if not self.config['base-lock']: qp.rotate(self.base_rot)
 
             #Base
             rx = rs*2
@@ -84,7 +86,7 @@ class SwerveWidget(QWidget):
                 else: iry = iry1
                 qp.translate(irx,iry)
                 if not self.config['wheel-lock']: qp.rotate(self.wheel_rot[i])
-                else: qp.rotate(-self.br)
+                else: qp.rotate(-self.base_rot)
                 #BG Circle
                 pen.setStyle(Qt.PenStyle.NoPen)
                 qp.setPen(pen)

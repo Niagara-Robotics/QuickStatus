@@ -1,9 +1,9 @@
 from utils.imports import *
 from utils.generic import restoreWindow, copyConfig, config, closeEvent
 from widgets.status_scroll import StatusScrollWidget
-from widgets.status import StatusWidget
 from widgets.swerve import SwerveWidget
 from widgets.lift import LiftWidget
+from widgets.intake import IntakeWidget
 
 class TabWidget(QWidget):
     def __init__(self, wid, conf, tabs):
@@ -34,7 +34,8 @@ class TabWidget(QWidget):
         for i in self.tablist:
             if i['type'] == 'status': self.status_tab(conf = copyConfig('status', i))
             if i['type'] == 'swerve': self.swerve_tab(conf = copyConfig('swerve', i))
-            if i['type'] == 'lift': self.lift_tab()
+            if i['type'] == 'lift': self.lift_tab(conf = copyConfig('lift', i))
+            if i['type'] == 'intake': self.intake_tab(conf = copyConfig('intake', i))
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
@@ -57,8 +58,11 @@ class TabWidget(QWidget):
     def swerve_tab(self, conf):
         self.tabs.addTab(SwerveWidget(wid = self.wid, conf = conf), "Swerve State")
 
-    def lift_tab(self):
-        self.tabs.addTab(LiftWidget(wid = self.wid), "Lift State")
+    def lift_tab(self, conf):
+        self.tabs.addTab(LiftWidget(wid = self.wid, conf = conf), "Lift State")
+        
+    def intake_tab(self, conf):
+        self.tabs.addTab(IntakeWidget(wid = self.wid, conf = conf), "Intake")
 
     def keyPressEvent(self, event):
         if isinstance(event, QKeyEvent) and not self.config['global-hotkeys']:

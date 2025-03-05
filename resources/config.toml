@@ -4,19 +4,15 @@
         global-hotkeys = true
         align = 'North'
         [[window.widget]] # Defines new widget
-            type = 'lift' # Defines widget type
+            type = 'intake' # Defines widget type
             base-lock = false
         [[window.widget]]
             type = 'swerve'
-
-    [[window]]
         [[window.widget]]
             type = 'status'
-            enable-scroll = true
     [[window]]
         [[window.widget]]
-            type = 'swerve'
-            enable-scroll = true
+            type = 'lift'
 
 [network]
     address = "localhost" # Use either IP address or team number
@@ -38,4 +34,7 @@
     wheel-table = "swerve"
 
 [lift] # Default settings for Lift widgets
+    network-table = ""
+
+[intake] # Default settings for Intake widgets
     network-table = ""
