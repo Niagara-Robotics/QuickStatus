@@ -18,6 +18,9 @@ class TabWidget(QWidget):
         self.layout = QGridLayout(widget)
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(getattr(self.tabs.TabPosition, self.config['align']))
+        self.tabs.setTabBarAutoHide(True)
+        if len(self.tablist) > 1: self.visible = True
+        else: self.visible = False
         self.setBackgroundRole(QPalette().ColorRole.Base)
         self.setAutoFillBackground(True)
 
@@ -29,6 +32,7 @@ class TabWidget(QWidget):
         }
         margin = margins.get(self.config['align'])
         self.layout.setContentsMargins(margin[0], margin[1], margin[2], margin[3])
+        if not self.visible: self.layout.setContentsMargins(0,0,0,0)
         
         # create tabs
         for i in self.tablist:
@@ -40,6 +44,7 @@ class TabWidget(QWidget):
         self.setLayout(self.layout)
 
         self.setWindowTitle('QuickStatus (Tabs)')
+        if not self.visible: self.setWindowTitle(self.tabs.currentWidget().windowTitle())
 
         selectedTab = self.settings.value("selectedTab")
         if selectedTab and config['general']['save-window-states']:
@@ -92,9 +97,9 @@ class TabWidget(QWidget):
             f"""
             QTabWidget::pane {{
                 background-color: {bg};
-                border-{alignment}: 1px solid;
+                border-{alignment}: {1*self.visible}px solid;
                 border-color: #26{hl};
-                margin-{alignment}: 5px;
+                margin-{alignment}: {5*self.visible}px;
             }}
             """)
         else:

@@ -17,7 +17,7 @@ class WindowCreator(QMainWindow):
         self.widgets = []
         for i in range(len(config['window'])):
             window = config['window'][i]['widget']
-            if len(window) > 1:
+            if True or len(window) > 1:
                 self.widgets.append(TabWidget(wid=self.windowNum, conf = copyConfig('tabs', config['window'][i]), tabs = window.copy()))
             else:
                 widget = window[0]['type']
