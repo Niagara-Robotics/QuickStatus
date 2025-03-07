@@ -1,7 +1,7 @@
-from utils.imports import *
-from utils.generic import restoreWindow, closeEvent, widget_refresh, colours, config
-from utils.network_tables import datatable, NetworkTables
-from math import sqrt, degrees
+from quickstatus.utils.imports import *
+from quickstatus.utils.generic import restoreWindow, closeEvent, widget_refresh, colours, config
+from quickstatus.utils.network_tables import datatable, NetworkTables
+from math import degrees
 
 class SwerveWidget(QWidget):
     def __init__(self, wid, conf):
@@ -20,10 +20,10 @@ class SwerveWidget(QWidget):
         self.timer.start(widget_refresh)
         self.base_rot = 0
         self.wheel_rot = [0,0,0,0]
-        self.velocities = [0.59,-0.4,1,-0.1]
-        self.targ_velocities = [0.7,-0.74,1,-0.7]
-        self.powers = [0.76,-0.5,0.96,-0.6]
-        self.wheel_status = [0,1,2,4]
+        self.velocities = [1,1,1,1]
+        self.targ_velocities = [0,0,0,0]
+        self.powers = [0.5,0.5,0.5,0.5]
+        self.wheel_status = [1,1,1,1]
         self.base_status = 0
     # draw status lights
     def paintEvent(self, event):
@@ -31,11 +31,11 @@ class SwerveWidget(QWidget):
         qp = QPainter(self)
         qp.setRenderHint(QPainter.RenderHint.Antialiasing) # VERY IMPORTANT AND MAKES EVERYTHING BEAUTIFUL ✨
         palette = self.palette()
-        background_colour = QPalette().color(QPalette().ColorRole.Window)
         foreground_colour = palette.color(palette.ColorRole.Text)
         foreground_colour.setAlpha(255)
         dark = palette.color(palette.ColorRole.Base).lighter(160)
         if sys.platform == 'darwin': palette.setColor(QPalette.ColorRole.Window, dark)
+        background_colour = self.palette().color(self.palette().ColorRole.Window)
         self.setPalette(palette)
         colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
         size = self.size()
@@ -132,7 +132,7 @@ class SwerveWidget(QWidget):
                 qp.translate(-cs/2.4,-cs*self.targ_velocities[i])
                 qp.setPen(Qt.PenStyle.NoPen)
                 qp.setBrush(QBrush(foreground_colour))
-                qp.drawPolygon([QPointF(0,td),QPointF(0,-td),QPointF(sqrt(((td*2)**2)-(td/2)**2),0)])
+                qp.drawPolygon([QPointF(0,td),QPointF(0,-td),QPointF(td*1.5,0)])
                 qp.translate(cs/2.4,cs*self.targ_velocities[i])
 
                 if not self.config['wheel-lock']: qp.rotate(-self.wheel_rot[i])

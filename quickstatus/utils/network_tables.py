@@ -1,13 +1,15 @@
 import ntcore, struct
 from time import sleep
-from utils.imports import *
-from utils.generic import config
+from quickstatus.utils.imports import *
+from quickstatus.utils.generic import config
 from math import degrees
 
 datatable = {
     config['status']['network-table']: {},
     config['swerve']['base-table']: {},
-    config['swerve']['wheel-table']: {}
+    config['swerve']['wheel-table']: {},
+    config['lift']['network-table']: {},
+    config['intake']['network-table']: {}
     }
 
 class NetworkTables():
@@ -19,19 +21,24 @@ class NetworkTables():
         tables['status'] = "/" + config['status']['network-table']
         tables['swerve-base'] = config['swerve']['base-table']
         tables['swerve-wheel'] = config['swerve']['wheel-table']
+        tables['lift'] = "/" + config['lift']['network-table']
+        tables['intake'] = "/" + config['intake']['network-table']
         #tables['lift'] = inst.getTable(config['lift']['network-table'])
 
         address = config['network']['address']
         if isinstance(address, str): inst.setServer(address)
         elif isinstance(address, int): inst.setServerTeam(address)
         if config['network']['ds-client']: inst.startDSClient()
-        else: inst.startClient4("QuickStatus")
+        inst.startClient4("QuickStatus")
 
         def value_updated(event):
             global datatable
+            #print(event.data.topic)
             path = event.data.topic.getName().split("/")
-            path.pop(-1)
-            path = "".join(path)
+            if "" in path: path.remove("")
+            #path.pop(-1)
+            #path = "".join(path)
+            path = path[0]
             topic = event.data.topic.getName().split("/")[-1]
             value = event.data.value.value()
 
@@ -48,8 +55,10 @@ class NetworkTables():
         def topic_removed(event):
             global datatable
             path = event.data.topic.getName().split("/")
-            path.pop(-1)
-            path = "".join(path)
+            if "" in path: path.remove("")
+            #path.pop(-1)
+            #path = "".join(path)
+            path = path[0]
             topic = event.data.topic.getName().split("/")[-1]
             inst.getTable("fart").getNumber
             #print(f"({path}) Topic removed: {topic}")
@@ -67,8 +76,8 @@ class NetworkTables():
             self.topicAddedListeners.append (inst.addListener(
                 [tables[i] + "/"], ntcore.EventFlags.kValueAll, value_updated
             ))
-            self.topicRemovedListeners.append (inst.addListener(
+            '''self.topicRemovedListeners.append (inst.addListener(
                 [tables[i] + "/"], ntcore.EventFlags.kUnpublish, topic_removed
-            ))
+            ))'''
 
         self.connectedListener = inst.addConnectionListener(True, connected)

@@ -1,6 +1,6 @@
-from utils.imports import *
-from create_windows import WindowCreator
-from utils.network_tables import NetworkTables
+from quickstatus.utils.imports import *
+from quickstatus.utils.create_windows import WindowCreator
+from quickstatus.utils.network_tables import NetworkTables
 
 if __name__ == '__main__':
     # pyqt stuff

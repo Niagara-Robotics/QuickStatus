@@ -1,7 +1,7 @@
-from utils.imports import *
-from utils.generic import widget_refresh, colours, config
+from quickstatus.utils.imports import *
+from quickstatus.utils.generic import widget_refresh, colours, config
+from quickstatus.utils.network_tables import datatable, NetworkTables
 from time import time
-from utils.network_tables import datatable, NetworkTables
 from math import ceil
 
 start_time = time()

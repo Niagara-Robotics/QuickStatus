@@ -1,9 +1,9 @@
-from utils.imports import *
-from utils.generic import restoreWindow, copyConfig, config, closeEvent
-from widgets.status_scroll import StatusScrollWidget
-from widgets.swerve import SwerveWidget
-from widgets.lift import LiftWidget
-from widgets.intake import IntakeWidget
+from quickstatus.utils.imports import *
+from quickstatus.utils.generic import restoreWindow, copyConfig, config, closeEvent
+from quickstatus.widgets.status_scroll import StatusScrollWidget
+from quickstatus.widgets.swerve import SwerveWidget
+from quickstatus.widgets.lift import LiftWidget
+from quickstatus.widgets.intake import IntakeWidget
 
 class TabWidget(QWidget):
     def __init__(self, wid, conf, tabs):

@@ -1,10 +1,10 @@
-from utils.imports import *
-from utils.generic import config, copyConfig
-from widgets.status_scroll import StatusScrollWidget
-from widgets.swerve import SwerveWidget
-from widgets.lift import LiftWidget
-from widgets.tab import TabWidget
-from widgets.intake import IntakeWidget
+from quickstatus.utils.imports import *
+from quickstatus.utils.generic import config, copyConfig
+from quickstatus.widgets.status_scroll import StatusScrollWidget
+from quickstatus.widgets.swerve import SwerveWidget
+from quickstatus.widgets.lift import LiftWidget
+from quickstatus.widgets.tab import TabWidget
+from quickstatus.widgets.intake import IntakeWidget
 
 from pynput import keyboard
 
@@ -26,7 +26,7 @@ class WindowCreator(QMainWindow):
                 if widget == 'lift': self.widgets.append(LiftWidget(wid = self.windowNum, conf = copyConfig('lift', window[0])))
                 if widget == 'intake': self.widgets.append(IntakeWidget(wid = self.windowNum, conf = copyConfig('intake', window[0])))
 
-            if len(self.widgets): self.widgets[-1].show()
+            if len(self.widgets) and (('enabled' in config['window'][i] and config['window'][i]['enabled']) or 'enabled' not in config['window'][i]): self.widgets[-1].show()
             self.windowNum += 1
         
         # start recieving global inputd

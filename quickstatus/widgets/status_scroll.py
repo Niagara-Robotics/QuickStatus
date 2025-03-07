@@ -1,6 +1,6 @@
-from widgets.status import StatusWidget
-from utils.imports import *
-from utils.generic import restoreWindow, closeEvent
+from quickstatus.widgets.status import StatusWidget
+from quickstatus.utils.imports import *
+from quickstatus.utils.generic import restoreWindow, closeEvent
 
 class StatusScrollWidget(QWidget):
     def __init__(self, wid, conf):

@@ -1,4 +1,4 @@
-from utils.imports import *
+from quickstatus.utils.imports import *
 import toml
 
 widget_refresh = 10

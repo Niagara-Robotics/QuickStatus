@@ -1,6 +1,7 @@
 [general]
     save-window-states = true # Saves and restores the position and current tab of all windows
     [[window]] # Defines new window
+        enabled = true
         global-hotkeys = true
         align = 'North'
         [[window.widget]] # Defines new widget
@@ -25,7 +26,7 @@
 [status] # Default settings for Status widgets
     enable-scroll = true # Enables vertical scrolling through the widget
     blink-interval = 0.2 # Time in seconds for each blink cycle. Set to 0 to disable blinking
-    network-table = "FMSInfo"
+    network-table = "fault_manager"
 
 [swerve] # Default settings for Swerve widgets
     base-lock = false # Locks base to single rotation
@@ -34,7 +35,7 @@
     wheel-table = "swerve"
 
 [lift] # Default settings for Lift widgets
-    network-table = ""
+    network-table = "lift"
 
 [intake] # Default settings for Intake widgets
-    network-table = ""
+    network-table = "intake"
