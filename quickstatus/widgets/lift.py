@@ -125,7 +125,7 @@ class LiftWidget(QWidget):
             qp.drawLine(QPointF(-arrow_width, 0), QPointF(arrow_width, 0))
             qp.restore()
 
-            lift_sensor = 124
+            lift_sensor = 200
             font = QFont()
             font.setPointSize(80)
             font_met = QFontMetrics(font)
@@ -139,7 +139,7 @@ class LiftWidget(QWidget):
             qp.drawRect(QRectF(wheel_pos[0]-ls_width/2-25,wheel_pos[1]-25,ls_width+50,ls_height+25))
             qp.restore()
 
-            cal_state = 2
+            cal_state = table['calibration_state']
             cal_text = "Calibration"
             cal_pos = (150, 525)
             cal_dist = 50
@@ -154,13 +154,13 @@ class LiftWidget(QWidget):
                                 QPointF(cal_pos[0]+cal_width+cal_dist+2, cal_pos[1]-cal_height/4+25)])
                 qp.setPen(QPen(colours.death_colour, 4))
             elif cal_state == 1:
+                qp.setPen(QPen(colours.caution_colour, 8))
+                qp.drawArc(QRectF(cal_pos[0]+cal_width+cal_dist, cal_pos[1]-cal_height/4-25, 50, 50 ), self.infr*-32, 960)
+            elif cal_state == 2:
                 qp.drawPolyline([QPointF(cal_pos[0]+cal_width+cal_dist-5, cal_pos[1]-cal_height/4+5), 
                                 QPointF(cal_pos[0]+cal_width+cal_dist+20, cal_pos[1]-cal_height/4+30),
                                 QPointF(cal_pos[0]+cal_width+cal_dist+45, cal_pos[1]-cal_height/4-30)])
                 qp.setPen(QPen(colours.accent_colour, 4))
-            elif cal_state == 2:
-                qp.setPen(QPen(colours.caution_colour, 8))
-                qp.drawArc(QRectF(cal_pos[0]+cal_width+cal_dist, cal_pos[1]-cal_height/4-25, 50, 50 ), self.infr*-32, 960)
                 
             if cal_state != 2: qp.drawEllipse(QPointF(cal_pos[0]+cal_width+cal_dist+25, cal_pos[1]-cal_height/4),50,50)
 
