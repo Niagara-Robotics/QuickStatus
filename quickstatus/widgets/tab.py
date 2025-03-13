@@ -48,7 +48,7 @@ class TabWidget(QWidget):
 
         selectedTab = self.settings.value("selectedTab")
         if selectedTab and config['general']['save-window-states']:
-            self.tabs.setCurrentIndex(selectedTab)
+            self.tabs.setCurrentIndex(int(selectedTab))
         
         restoreWindow(self)
 
