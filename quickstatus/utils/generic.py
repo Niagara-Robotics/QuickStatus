@@ -36,3 +36,21 @@ def restoreWindow(self):
         self.restoreGeometry(windowScreenGeometry)
     else:
         self.resize(640, 480)
+
+def noNetworkTable(self):
+    qp = QPainter(self)
+    width = self.size().width()
+    height = self.size().height()
+    palette = self.palette()
+    foreground_colour = palette.color(palette.ColorRole.Text)
+    foreground_colour.setAlpha(255)
+    qp.setPen(foreground_colour)
+    font = QFont('Iosevka Aile')
+    font.setPixelSize(24)
+    qp.setFont(font)
+    text = "NetworkTable not connected"
+    font_metrics = QFontMetrics(font)
+    text_width = font_metrics.horizontalAdvance(text)/2
+    text_height = font_metrics.height()
+    qp.drawText(QPointF(width/2-text_width, height/2+text_height/4), text)
+    self.setMinimumHeight(text_height)

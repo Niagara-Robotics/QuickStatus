@@ -1,5 +1,5 @@
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import closeEvent, restoreWindow, colours, widget_refresh
+from quickstatus.utils.generic import *
 from quickstatus.utils.network_tables import NetworkTables, datatable
 from math import degrees
 
@@ -16,8 +16,9 @@ class IntakeWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
+        self.arrow_angle = 0
         self.rott = 0
-        self.arrow_rot = 0
+        self.old_dt = int(monotonic()*150)
 
     def paintEvent(self, event):
         qp = QPainter(self)
@@ -36,8 +37,10 @@ class IntakeWidget(QWidget):
         h = size.height()
         cw = w/2 # canvas width
         ch = h/2 # canvas height
+        dt = int(monotonic()*150)
         table = datatable['intake']
-        if NetworkTables.inst.isConnected() and 'present' in table:
+
+        if NetworkTables.inst.isConnected() and 'ambient' in table:
             scale = cw/500
             qp.scale(scale, scale)
             qp.translate(cw/scale,ch/scale)
@@ -47,15 +50,17 @@ class IntakeWidget(QWidget):
             qp.setPen(pen)
             qp.setBrush(Qt.BrushStyle.NoBrush)
 
-            self.rott = table['encoder_position']*-360
             arc_pos = (-300,-225)
             arc_size = 400
             arc_dist = 50
             arc_angle = 90*16
             arc_cen = (arc_pos[0]+arc_size/2,arc_pos[1]+arc_size/2)
-            arc_rot = self.rott
-            self.arrow_rot += 0.2
-            self.arrow_rot %= 90
+            arc_rot = table['encoder_position']*-360
+            
+            time_dif = (dt-self.old_dt)
+            self.arrow_angle += time_dif/2
+            self.old_dt = dt
+            arrow_angle = int(self.arrow_angle % 90)
 
             qp.translate(arc_cen[0], arc_cen[1]+125)
 
@@ -82,14 +87,12 @@ class IntakeWidget(QWidget):
                 qp.drawEllipse(QPointF(0,-arc_size/2-arc_dist/2), arc_dist/2*wheel_size, arc_dist/2*wheel_size)
                 qp.rotate(-rot)
             
-            arrow_angle = int(self.arrow_rot*6)
-            arrow_angle %= 90
             arrow_current = table['voltage_out']
             if arrow_current != 0:
                 if arrow_current > 0: arrow_up = True
                 else: arrow_up = False
                 qp.save()
-                qp.setBrush(foreground_colour)
+                qp.setBrush(colours.velocity_colour)
                 qp.setPen(Qt.PenStyle.NoPen)
                 tri_size = 35
                 if arrow_up: qp.rotate(-90+arrow_angle)
@@ -108,52 +111,46 @@ class IntakeWidget(QWidget):
             qp.translate(-arc_cen[0], -(arc_pos[1]-arc_dist/2))
 
             #Draw State/Action
-            font = QFont()
-            font.setPointSize(60)
+            font = QFont('Iosevka Aile')
+            font.setPixelSize(60)
             qp.setFont(font)
             qp.save()
             qp.translate(0,-200)
-            font.setPointSize(80)
+            font.setPixelSize(80)
             qp.setFont(font)
 
             qp.setBrush(Qt.BrushStyle.NoBrush)
 
-            qp.drawRect(QRectF(-415,285,530,130))
+            qp.drawRect(QRectF(-415,285,580,130))
 
             action_text = "Algae Pickup"
             state_text = "Coral VA"
 
             qp.drawText(-380,377, action_text)
-            font.setPointSizeF(70)
+            font.setPixelSize(70)
             qp.setFont(font)
             qp.drawText(-380,500, state_text)
 
 
             # Draw Bay
-            qp.restore()
+            qp.restore()            
             qp.translate(125,-125)
+            bay_num = round(table['distance'])
+            bay_amb = round(table['ambient'])
+            if bay_amb > 32:
+                badness_level = 4
+                text = "nil"
+            else:
+                badness_level = 1
+                text = str(bay_num)+"mm"
+
             qp.drawPolyline([QPointF(-100,0), QPointF(-50,125), QPointF(50,125), QPointF(100,0)])
-            qp.setPen(QPen(colour_chart[4], 8, Qt.PenStyle.DotLine))
+            qp.setPen(QPen(colour_chart[badness_level], 8, Qt.PenStyle.DotLine))
             qp.drawLine(QLineF(-75,100,75,100))
             
             qp.setPen(QPen(foreground_colour, 25))
             if table['present']: qp.drawEllipse(QPointF(0,25),50,50)
 
-            bay_num = round(table['distance'])
-
-            qp.drawText(125,75, str(bay_num)+"mm")
+            qp.drawText(125,75, text)
         
-        else:
-            qp.setPen(foreground_colour)
-            font = QFont()
-            font.setPointSizeF(16)
-            qp.setFont(font)
-            text = "NetworkTable not connected"
-            font_metrics = QFontMetrics(font)
-            text_width = font_metrics.horizontalAdvance(text)/2
-            text_height = font_metrics.height()
-            qp.drawText(QPointF(cw-text_width, ch+text_height/4), text)
-            self.setMinimumHeight(text_height)
-
-    def closeEvent(self, e):
-        closeEvent(self, e)
+        else: noNetworkTable(self)

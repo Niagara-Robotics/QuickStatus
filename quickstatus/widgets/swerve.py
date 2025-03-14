@@ -1,5 +1,5 @@
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import restoreWindow, closeEvent, widget_refresh, colours, config
+from quickstatus.utils.generic import *
 from quickstatus.utils.network_tables import datatable, NetworkTables
 from math import degrees
 
@@ -139,17 +139,4 @@ class SwerveWidget(QWidget):
                 else: qp.rotate(self.base_rot)
                 qp.translate(-irx,-iry)
             if self.config['base-lock']: self.base_rot = 0
-        else:
-            qp.setPen(foreground_colour)
-            font = QFont()
-            font.setPointSizeF(16)
-            qp.setFont(font)
-            text = "NetworkTable not connected"
-            font_metrics = QFontMetrics(font)
-            text_width = font_metrics.horizontalAdvance(text)/2
-            text_height = font_metrics.height()
-            qp.drawText(QPointF(cw-text_width, ch+text_height/4), text)
-            self.setMinimumHeight(text_height)
-
-    def closeEvent(self, e):
-        closeEvent(self, e)
+        else: noNetworkTable(self)

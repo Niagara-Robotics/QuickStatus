@@ -9,7 +9,8 @@ datatable = {
     config['swerve']['base-table']: {},
     config['swerve']['wheel-table']: {},
     config['lift']['network-table']: {},
-    config['intake']['network-table']: {}
+    config['intake']['network-table']: {},
+    'SmartDashboard': {}
     }
 
 class NetworkTables():
@@ -23,7 +24,7 @@ class NetworkTables():
         tables['swerve-wheel'] = config['swerve']['wheel-table']
         tables['lift'] = "/" + config['lift']['network-table']
         tables['intake'] = "/" + config['intake']['network-table']
-        #tables['lift'] = inst.getTable(config['lift']['network-table'])
+        tables['SmartDashboard'] = "/SmartDashboard"
 
         address = config['network']['address']
         if isinstance(address, str): inst.setServer(address)

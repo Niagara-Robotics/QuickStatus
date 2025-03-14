@@ -1,6 +1,7 @@
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import closeEvent, restoreWindow, colours, widget_refresh
+from quickstatus.utils.generic import *
 from quickstatus.utils.network_tables import datatable, NetworkTables
+import random
 
 class LiftWidget(QWidget):
     def __init__(self, wid, conf):
@@ -24,9 +25,9 @@ class LiftWidget(QWidget):
             self.liftv.append(QPointF(float(liftl[b].split(", ")[0]), float(liftl[b].split(", ")[1])))
             b += 1
         lift.close()
+        self.old_dt = int(monotonic()*150)
         self.wr = 0
         self.rot_right = True
-        self.infr = 0
 
     def paintEvent(self, event):
         qp = QPainter(self)
@@ -44,9 +45,14 @@ class LiftWidget(QWidget):
         h = size.height()
         cw = w/2 # canvas width
         ch = h/2 # canvas height
+        dt = int(monotonic()*150)
 
         table = datatable['lift']
-        if NetworkTables.inst.isConnected() and 'position' in table:
+        dash = datatable['SmartDashboard']
+        dash['gripper_coral'] = True
+        dash['gripper_distance'] = 200
+        dash['gripper_ambient'] = 16
+        if NetworkTables.inst.isConnected() and len(table) >= 4:
             qp.setBrush(foreground_colour)
             qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
             scale = cw/525
@@ -71,7 +77,7 @@ class LiftWidget(QWidget):
 
             # arm
             qp.translate(0,-self.elev2*500+500-self.elev3*500)
-            qp.rotate(self.arm)
+            qp.rotate(self.arm*50)
             qp.translate(-irx1,-iry1) # rotate from middle bottom
             qp.setPen(QPen(background_colour, 24))
             qp.drawPolygon(lift)
@@ -92,7 +98,7 @@ class LiftWidget(QWidget):
             qp.setPen(QPen(foreground_colour, 8))
             qp.drawLine(QLineF(-100,al_trans,100,al_trans))
 
-            # claw visual
+            # arm rotation
             wheel_size = 50
             wheel_pos = (500,0)
             tri_size = 40
@@ -125,17 +131,24 @@ class LiftWidget(QWidget):
             qp.drawLine(QPointF(-arrow_width, 0), QPointF(arrow_width, 0))
             qp.restore()
 
-            lift_sensor = 200
-            font = QFont()
-            font.setPointSize(80)
+            lift_sensor = int(dash['gripper_distance'])
+            ambient = dash['gripper_ambient']
+            if ambient > 200:
+                badness_level = 4
+                text = "nil"
+            else:
+                badness_level = 1
+                text = str(lift_sensor)+"mm"
+
+            font = QFont('Iosevka Aile')
+            font.setPixelSize(80)
             font_met = QFontMetrics(font)
-            ls_width = font_met.horizontalAdvance(str(lift_sensor)+"mm")
+            ls_width = font_met.horizontalAdvance(text)
             ls_height = font_met.height()
-            
             qp.setFont(font)
-            qp.drawText(QPointF(wheel_pos[0]-ls_width/2,wheel_pos[1]+60),str(lift_sensor)+"mm")
+            qp.drawText(QPointF(wheel_pos[0]-ls_width/2,wheel_pos[1]+60),text)
             qp.save()
-            qp.setPen(QPen(colours.death_colour, 8, Qt.PenStyle.DashLine, join=Qt.PenJoinStyle.RoundJoin))
+            qp.setPen(QPen(colour_chart[badness_level], 8, Qt.PenStyle.DashLine, join=Qt.PenJoinStyle.RoundJoin))
             qp.drawRect(QRectF(wheel_pos[0]-ls_width/2-25,wheel_pos[1]-25,ls_width+50,ls_height+25))
             qp.restore()
 
@@ -147,27 +160,36 @@ class LiftWidget(QWidget):
             cal_height = font_met.height()
             qp.drawText(cal_pos[0], cal_pos[1], cal_text)
             qp.setPen(QPen(foreground_colour, 8))
+            qp.save()
+            qp.translate(cal_pos[0]+cal_width+cal_dist+25, cal_pos[1]-cal_height/4)
+            qp.rotate(45)
+            xs = 30
+            cs = 25
             if cal_state == 0:
-                qp.drawLines([QPointF(cal_pos[0]+cal_width+cal_dist+2, cal_pos[1]-cal_height/4-25), 
-                                QPointF(cal_pos[0]+cal_width+cal_dist+47, cal_pos[1]-cal_height/4+25),
-                                QPointF(cal_pos[0]+cal_width+cal_dist+47, cal_pos[1]-cal_height/4-25),
-                                QPointF(cal_pos[0]+cal_width+cal_dist+2, cal_pos[1]-cal_height/4+25)])
+                qp.drawLines([
+                    QPoint(-xs,0),
+                    QPoint(xs,0),
+                    QPoint(0,-xs),
+                    QPoint(0,xs)])
                 qp.setPen(QPen(colours.death_colour, 4))
             elif cal_state == 1:
                 qp.setPen(QPen(colours.caution_colour, 8))
-                qp.drawArc(QRectF(cal_pos[0]+cal_width+cal_dist, cal_pos[1]-cal_height/4-25, 50, 50 ), self.infr*-32, 960)
+                qp.drawArc(QRectF(-40,-40, 80, 80 ), int(monotonic()*-4800), 960)
             elif cal_state == 2:
-                qp.drawPolyline([QPointF(cal_pos[0]+cal_width+cal_dist-5, cal_pos[1]-cal_height/4+5), 
-                                QPointF(cal_pos[0]+cal_width+cal_dist+20, cal_pos[1]-cal_height/4+30),
-                                QPointF(cal_pos[0]+cal_width+cal_dist+45, cal_pos[1]-cal_height/4-30)])
+                pos = (10,20)
+                qp.drawPolyline([
+                    QPoint(pos[0]-cs, pos[1]),
+                    QPoint(pos[0],pos[1]),
+                    QPoint(pos[0],pos[1]-cs*2)])
                 qp.setPen(QPen(colours.accent_colour, 4))
                 
-            if cal_state != 2: qp.drawEllipse(QPointF(cal_pos[0]+cal_width+cal_dist+25, cal_pos[1]-cal_height/4),50,50)
+            if cal_state != 1: qp.drawEllipse(QPoint(0,0),50,50)
+            qp.restore()
 
+            cr = self.rot_right
+            # self.rot_right = datatable...
+            if (random.randrange(1,50) == 1): self.rot_right = not self.rot_right
             rot = self.rot_right.conjugate()*2-1
-            self.wr += rot*2
-            self.infr += 2
-            if self.wr % 600 == 0: self.rot_right = not self.rot_right
             arc_size = 1.5 * wheel_size
 
             qp.translate(wheel_pos[0]-wheel_size*2, wheel_pos[1]-475)
@@ -188,14 +210,23 @@ class LiftWidget(QWidget):
 
             qp.drawLine(QPointF(-line_width/2,line_pos), QPointF(-line_width/2,line_pos+line_height*2))
             qp.drawLine(QPointF(line_width/2,line_pos), QPointF(line_width/2,line_pos+line_height*2))
+            
+            qp.setPen(QPen(foreground_colour, 25))
+            dist = dash['gripper_distance']
+            if dash['gripper_coral']: qp.drawEllipse(QPoint(0,35-dist),35,35)
 
             qp.restore()
             qp.save()
             qp.drawEllipse(QPointF(0,0),wheel_size,wheel_size)
             qp.setPen(QPen(background_colour, 24))
-            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), -self.wr*16, 960)
+            time_dif = (dt-self.old_dt)*32*rot
+            self.wr += time_dif
+            angle = -self.wr
+            angle2 = self.wr+1920
+            self.old_dt = dt
+            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
             qp.setPen(QPen(colours.velocity_colour, 8))
-            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), -self.wr*16, 960)
+            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
             qp.setPen(Qt.PenStyle.NoPen)
             qp.setBrush(foreground_colour)
             qp.drawPolygon([QPointF(tri_size/2*-rot,-tri_size/2),QPointF(tri_size/2*-rot,tri_size/2),QPointF(-tri_size/2*-rot,0)])
@@ -204,23 +235,11 @@ class LiftWidget(QWidget):
             qp.translate(wheel_size*4,0)
             qp.drawEllipse(QPoint(0,0),wheel_size,wheel_size)
             qp.setPen(QPen(background_colour, 24))
-            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), self.wr*16+1920, 960)
+            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle2, 960)
             qp.setPen(QPen(colours.velocity_colour, 8))
-            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), self.wr*16+1920, 960)
+            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle2, 960)
             qp.setPen(Qt.PenStyle.NoPen)
             qp.setBrush(foreground_colour)
             qp.drawPolygon([QPointF(tri_size/2*rot,-tri_size/2),QPointF(tri_size/2*rot,tri_size/2),QPointF(-tri_size/2*rot,0)])
         
-        else:
-            qp.setPen(foreground_colour)
-            font = QFont()
-            font.setPointSizeF(16)
-            qp.setFont(font)
-            text = "NetworkTable not connected"
-            font_metrics = QFontMetrics(font)
-            text_width = font_metrics.horizontalAdvance(text)/2
-            text_height = font_metrics.height()
-            qp.drawText(QPointF(cw-text_width, ch+text_height/4), text)
-            self.setMinimumHeight(text_height)
-    def closeEvent(self, e):
-        closeEvent(self, e)
+        else: noNetworkTable(self)

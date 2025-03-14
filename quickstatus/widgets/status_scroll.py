@@ -1,6 +1,6 @@
 from quickstatus.widgets.status import StatusWidget
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import restoreWindow, closeEvent
+from quickstatus.utils.generic import restoreWindow
 
 class StatusScrollWidget(QWidget):
     def __init__(self, wid, conf):
@@ -26,6 +26,3 @@ class StatusScrollWidget(QWidget):
                 border: 0px;
             }
             ''')
-
-    def closeEvent(self, e):
-        closeEvent(self, e)

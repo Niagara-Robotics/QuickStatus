@@ -1,10 +1,9 @@
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import widget_refresh, colours, config
+from quickstatus.utils.generic import widget_refresh, colours, config, noNetworkTable
 from quickstatus.utils.network_tables import datatable, NetworkTables
-from time import time
 from math import ceil
 
-start_time = time()
+start_time = monotonic()
 
 class StatusWidget(QWidget):
         
@@ -42,7 +41,7 @@ class StatusWidget(QWidget):
         height = size.height()
         total_width = 0
         blink_speed = self.config['blink-interval']
-        ctime = (time() - start_time) # how long the program has been running
+        ctime = (monotonic() - start_time) # how long the program has been running
 
         colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
         b = 0
@@ -97,9 +96,9 @@ class StatusWidget(QWidget):
 
                     text = i
                     text_x = x + radius + 6
-                    text_y = y+12
-                    font = QFont()
-                    font.setPointSizeF(13)
+                    text_y = y+13
+                    font = QFont('Iosevka Aile')
+                    font.setPixelSize(15)
                     qp.setFont(font)
                     if table[i] != 0 and (ctime % flash_time) <= flash_time/2: qp.setPen(QColor('#FFFFFF'))
                     else: qp.setPen(foreground_colour)
@@ -116,14 +115,4 @@ class StatusWidget(QWidget):
                     b += 1
 
             self.setMinimumHeight(b*27 + 8)
-        else:
-            qp.setPen(foreground_colour)
-            font = QFont()
-            font.setPointSizeF(16)
-            qp.setFont(font)
-            text = "NetworkTable not connected"
-            font_metrics = QFontMetrics(font)
-            text_width = font_metrics.horizontalAdvance(text)/2
-            text_height = font_metrics.height()
-            qp.drawText(QPointF(width/2-text_width, height/2+text_height/4), text)
-            self.setMinimumHeight(text_height)
+        else: noNetworkTable(self)

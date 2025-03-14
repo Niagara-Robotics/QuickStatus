@@ -6,6 +6,7 @@ from quickstatus.widgets.lift import LiftWidget
 from quickstatus.widgets.tab import TabWidget
 from quickstatus.widgets.intake import IntakeWidget
 
+from os.path import abspath
 from pynput import keyboard
 
 class WindowCreator(QMainWindow):
@@ -13,6 +14,7 @@ class WindowCreator(QMainWindow):
         super(WindowCreator, self).__init__()
 
         # create windows
+        QFontDatabase.addApplicationFont(abspath('resources/fonts/IosevkaAile-Regular.ttf'))
         self.windowNum = 0
         self.widgets = []
         for i in range(len(config['window'])):
