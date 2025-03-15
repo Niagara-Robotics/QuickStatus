@@ -150,8 +150,6 @@ class ReefWidget(QWidget):
                        point_3)
             qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
 
-            # shart
-
             qp.drawLine(0,rh, 0,-rh)
             
             qp.drawArc(0,-rh-arcs,
