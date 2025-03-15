@@ -11,9 +11,11 @@
             type = 'swerve'
         [[window.widget]]
             type = 'status'
-    [[window]]
         [[window.widget]]
             type = 'lift'
+    [[window]]
+        [[window.widget]]
+            type = 'reef'
 
 [network]
     address = "localhost" # Use either IP address or team number
@@ -39,3 +41,6 @@
 
 [intake] # Default settings for Intake widgets
     network-table = "intake"
+
+[reef] # Default settings for Reef widgets
+    # aint nothing here lmao

@@ -104,8 +104,10 @@ class IntakeWidget(QWidget):
                 qp.restore()
             qp.translate(0, -(arc_size/2+arc_dist/2))
             if arrow_current != 0:
+                qp.setPen(QPen(colours.velocity_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
                 if arrow_up: qp.drawArc(QRectF(-arc_size/2-arc_dist*2, -arc_dist*1.5, arc_size+arc_dist*4, arc_size+arc_dist*4), -arc_angle*2, -arrow_angle*16)
                 else: qp.drawArc(QRectF(-arc_size/2-arc_dist*2, -arc_dist*1.5, arc_size+arc_dist*4, arc_size+arc_dist*4), arc_angle*2-1440, arrow_angle*16)
+                qp.setPen(QPen(foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
             
             qp.rotate(-arc_rot)
             qp.translate(-arc_cen[0], -(arc_pos[1]-arc_dist/2))

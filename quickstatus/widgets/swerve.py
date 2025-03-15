@@ -25,6 +25,7 @@ class SwerveWidget(QWidget):
         self.powers = [0.5,0.5,0.5,0.5]
         self.wheel_status = [1,1,1,1]
         self.base_status = 0
+        
     # draw status lights
     def paintEvent(self, event):
         #Setup

@@ -4,6 +4,7 @@ from quickstatus.widgets.status_scroll import StatusScrollWidget
 from quickstatus.widgets.swerve import SwerveWidget
 from quickstatus.widgets.lift import LiftWidget
 from quickstatus.widgets.intake import IntakeWidget
+from quickstatus.widgets.reef import ReefWidget
 
 class TabWidget(QWidget):
     def __init__(self, wid, conf, tabs):
@@ -40,6 +41,7 @@ class TabWidget(QWidget):
             if i['type'] == 'swerve': self.swerve_tab(conf = copyConfig('swerve', i))
             if i['type'] == 'lift': self.lift_tab(conf = copyConfig('lift', i))
             if i['type'] == 'intake': self.intake_tab(conf = copyConfig('intake', i))
+            if i['type'] == 'reef': self.reef_tab(conf = copyConfig('reef', i))
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
@@ -68,6 +70,9 @@ class TabWidget(QWidget):
         
     def intake_tab(self, conf):
         self.tabs.addTab(IntakeWidget(wid = self.wid, conf = conf), "Intake")
+
+    def reef_tab(self, conf):
+        self.tabs.addTab(ReefWidget(wid = self.wid, conf = conf), "Reef")
 
     def keyPressEvent(self, event):
         if isinstance(event, QKeyEvent) and not self.config['global-hotkeys']:

@@ -49,10 +49,7 @@ class LiftWidget(QWidget):
 
         table = datatable['lift']
         dash = datatable['SmartDashboard']
-        dash['gripper_coral'] = True
-        dash['gripper_distance'] = 200
-        dash['gripper_ambient'] = 16
-        if NetworkTables.inst.isConnected() and len(table) >= 4:
+        if NetworkTables.inst.isConnected() and len(table) >= 4 and len(dash) >= 20:
             qp.setBrush(foreground_colour)
             qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
             scale = cw/525
@@ -101,7 +98,6 @@ class LiftWidget(QWidget):
             # arm rotation
             wheel_size = 50
             wheel_pos = (500,0)
-            tri_size = 40
 
             arr_size = 60
             grip_size = 125
@@ -224,12 +220,13 @@ class LiftWidget(QWidget):
             angle = -self.wr
             angle2 = self.wr+1920
             self.old_dt = dt
+            tri_size = 20
             qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
             qp.setPen(QPen(colours.velocity_colour, 8))
             qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
             qp.setPen(Qt.PenStyle.NoPen)
             qp.setBrush(foreground_colour)
-            qp.drawPolygon([QPointF(tri_size/2*-rot,-tri_size/2),QPointF(tri_size/2*-rot,tri_size/2),QPointF(-tri_size/2*-rot,0)])
+            qp.drawPolygon([QPointF(-tri_size,tri_size*-rot),QPointF(tri_size,tri_size*-rot),QPointF(0,-tri_size*-rot)])
 
             qp.restore()
             qp.translate(wheel_size*4,0)
@@ -240,6 +237,6 @@ class LiftWidget(QWidget):
             qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle2, 960)
             qp.setPen(Qt.PenStyle.NoPen)
             qp.setBrush(foreground_colour)
-            qp.drawPolygon([QPointF(tri_size/2*rot,-tri_size/2),QPointF(tri_size/2*rot,tri_size/2),QPointF(-tri_size/2*rot,0)])
+            qp.drawPolygon([QPointF(-tri_size,tri_size*-rot),QPointF(tri_size,tri_size*-rot),QPointF(0,-tri_size*-rot)])
         
         else: noNetworkTable(self)
