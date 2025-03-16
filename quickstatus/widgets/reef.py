@@ -116,18 +116,10 @@ class ReefWidget(QWidget):
             rh = 300 # reef height
 
             self.ab += 0.01
-            selected = round(self.ab) % 4
-
+            selected = round(self.ab) % 4 + 1
             is_flashing = dt/50 % 1 <= 0.5
-            if selected == 2:
-                if is_flashing:
-                    qp.setPen(QPen(colours.accent_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
-                    qp.drawPolygon(QPolygonF(self.selected).translated(getAnglePoint(0,-rh/4,arca,exl2)))
-                qp.setPen(QPen(foreground_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
-            qp.drawLine(getAngleLine(0,-rh/4,arca, exl2))
-            qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
 
-            if selected == 1:
+            if selected == 2:
                 if is_flashing:
                     qp.setPen(QPen(colours.accent_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
                     qp.drawPolygon(QPolygonF(self.selected).translated(getAnglePoint(0,rh/1.5,arca,exl2)))
@@ -135,12 +127,20 @@ class ReefWidget(QWidget):
             qp.drawLine(getAngleLine(0,rh/1.5,arca, exl2))
             qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
 
+            if selected == 3:
+                if is_flashing:
+                    qp.setPen(QPen(colours.accent_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+                    qp.drawPolygon(QPolygonF(self.selected).translated(getAnglePoint(0,-rh/4,arca,exl2)))
+                qp.setPen(QPen(foreground_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+            qp.drawLine(getAngleLine(0,-rh/4,arca, exl2))
+            qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+
             endPoint = getAnglePoint(0,-rh-arcs/2,arca,arcs/2+exl)
             anglePoint = getAnglePoint(0,0,90+arca,arcs)
             point_3 = QPointF(endPoint.x()-anglePoint.x()+arcs-1, 
                                  endPoint.y()-anglePoint.y()+1-exl)
             
-            if selected == 3:
+            if selected == 4:
                 if is_flashing:
                     qp.setPen(QPen(colours.accent_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
                     qp.drawPolygon(QPolygonF(self.selected).translated(point_3))
@@ -168,7 +168,7 @@ class ReefWidget(QWidget):
             
             # top-down
             td_selected = round(self.ab) % 13
-            qp.translate(650,-160)
+            qp.translate(650,0)
             QPointF()
             for i in range(len(self.reef_points)):
                 index = self.reef_points[i]
@@ -181,5 +181,14 @@ class ReefWidget(QWidget):
                 qp.drawLine(index,branch_point)
                 qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
             qp.drawPolygon(self.reef)
+
+            place_level = "L"+str(selected)
+            font = QFont('Iosevka Aile')
+            font.setBold(True)
+            font.setPixelSize(160)
+            ls_width = QFontMetrics(font).horizontalAdvance(place_level)
+            qp.setFont(font)
+            qp.setPen(foreground_colour)
+            qp.drawText(QPointF(0-ls_width/2,-500),place_level)
 
         else: noNetworkTable(self)
