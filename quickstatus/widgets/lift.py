@@ -28,6 +28,7 @@ class LiftWidget(QWidget):
         self.old_dt = int(monotonic()*150)
         self.wr = 0
         self.rot_right = True
+        self.nt_connected = False
 
     def paintEvent(self, event):
         qp = QPainter(self)
@@ -46,10 +47,15 @@ class LiftWidget(QWidget):
         cw = w/2 # canvas width
         ch = h/2 # canvas height
         dt = int(monotonic()*150)
-
+        
         table = datatable['lift']
         dash = datatable['SmartDashboard']
-        if NetworkTables.inst.isConnected() and len(table) >= 4 and len(dash) >= 20:
+        table_req = ['encoder_position', 'position', 'calibration_state']
+        dash_req = ['gripper_distance', 'gripper_ambient', 'gripper_coral']
+        if self.nt_connected == False:
+            self.nt_connected = all(k in table for k in table_req) and all(k in dash for k in dash_req)
+
+        if NetworkTables.inst.isConnected() and self.nt_connected:
             qp.setBrush(foreground_colour)
             qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
             scale = cw/525
@@ -161,7 +167,7 @@ class LiftWidget(QWidget):
             qp.rotate(45)
             xs = 30
             cs = 25
-            if cal_state == 0:
+            if cal_state == 0 or cal_state == 3:
                 qp.drawLines([
                     QPoint(-xs,0),
                     QPoint(xs,0),

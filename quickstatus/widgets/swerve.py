@@ -25,6 +25,7 @@ class SwerveWidget(QWidget):
         self.powers = [0.5,0.5,0.5,0.5]
         self.wheel_status = [1,1,1,1]
         self.base_status = 0
+        self.nt_connected = False
         
     # draw status lights
     def paintEvent(self, event):
@@ -49,8 +50,12 @@ class SwerveWidget(QWidget):
 
         base = datatable[config['swerve']['base-table']]
         wheels = datatable[config['swerve']['wheel-table']]
-
-        if NetworkTables.inst.isConnected() and 'module_positions' in wheels and 'odometry_pose' in base:
+        base_req = ['odometry_pose']
+        wheels_req = ['module_positions']
+        if self.nt_connected == False:
+            self.nt_connected = all(k in base for k in base_req) and all(k in wheels for k in wheels_req)
+        
+        if NetworkTables.inst.isConnected() and self.nt_connected:
             base = base['odometry_pose']
             wheels = wheels['module_positions']
             if not self.config['base-lock']: self.base_rot = -degrees(base[2])

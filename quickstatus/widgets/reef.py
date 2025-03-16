@@ -80,6 +80,8 @@ class ReefWidget(QWidget):
         points_file.close()
 
         self.ab = 0
+        self.nt_connected = False
+
     def paintEvent(self, event):
         qp = QPainter(self)
         qp.setRenderHint(QPainter.RenderHint.Antialiasing) # VERY IMPORTANT AND MAKES EVERYTHING BEAUTIFUL ✨
@@ -99,9 +101,12 @@ class ReefWidget(QWidget):
         ch = h/2 # canvas height
         dt = int(monotonic()*150)
 
-        table = datatable['lift']
-        dash = datatable['SmartDashboard']
-        if NetworkTables.inst.isConnected() and len(table) >= 4 and len(dash) >= 20 or True:
+        table = datatable['SmartDashboard']
+        table_req = []
+        if self.nt_connected == False:
+            self.nt_connected = all(k in table for k in table_req)
+
+        if NetworkTables.inst.isConnected() and self.nt_connected:
             qp.setBrush(Qt.BrushStyle.NoBrush)
             qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
             scale = cw/600

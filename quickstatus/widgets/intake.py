@@ -19,6 +19,7 @@ class IntakeWidget(QWidget):
         self.arrow_angle = 0
         self.rott = 0
         self.old_dt = int(monotonic()*150)
+        self.nt_connected = False
 
     def paintEvent(self, event):
         qp = QPainter(self)
@@ -38,9 +39,13 @@ class IntakeWidget(QWidget):
         cw = w/2 # canvas width
         ch = h/2 # canvas height
         dt = int(monotonic()*150)
+        
         table = datatable['intake']
+        table_req = ['ambient', 'encoder_position', 'distance', 'present', 'voltage_out']
+        if self.nt_connected == False:
+            self.nt_connected = all(k in table for k in table_req)
 
-        if NetworkTables.inst.isConnected() and 'ambient' in table:
+        if NetworkTables.inst.isConnected() and self.nt_connected:
             scale = cw/500
             qp.scale(scale, scale)
             qp.translate(cw/scale,ch/scale)
