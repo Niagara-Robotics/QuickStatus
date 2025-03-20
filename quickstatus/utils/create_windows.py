@@ -1,10 +1,6 @@
 from quickstatus.utils.imports import *
 from quickstatus.utils.generic import config, copyConfig
-from quickstatus.widgets.status_scroll import StatusScrollWidget
-from quickstatus.widgets.swerve import SwerveWidget
-from quickstatus.widgets.lift import LiftWidget
 from quickstatus.widgets.tab import TabWidget
-from quickstatus.widgets.intake import IntakeWidget
 
 from os.path import abspath
 from os import listdir
@@ -17,19 +13,28 @@ class WindowCreator(QMainWindow):
         # create windows
         for file in listdir('resources/fonts'):
             QFontDatabase.addApplicationFont(abspath(f'resources/fonts/{file}'))
+        
         self.windowNum = 0
         self.widgets = []
-        for i in range(len(config['window'])):
-            window = config['window'][i]['widget']
-            self.widgets.append(TabWidget(wid=self.windowNum, conf = copyConfig('tabs', config['window'][i]), tabs = window.copy()))
 
-            if len(self.widgets) and (('enabled' in config['window'][i] and config['window'][i]['enabled']) or 'enabled' not in config['window'][i]): self.widgets[-1].show()
+        for window_data in config['window']:
+            window = window_data['widget']
+            widget = TabWidget(
+                wid = self.windowNum,
+                conf = copyConfig('tabs', window_data),
+                tabs = window.copy()
+            )
+            self.widgets.append(widget)
+
+            if window_data.get('enabled', True):
+                widget.show()
+                
             self.windowNum += 1
         
-        # start recieving global inputd
+        # start recieving global input
         def sendKeys(key):
-            for i in range(self.windowNum):
-                if isinstance(self.widgets[i], TabWidget): self.widgets[i].on_press(key)
+            for widget in self.widgets:
+                if isinstance(widget, TabWidget): widget.on_press(key)
 
         self.listener = keyboard.Listener(on_press=sendKeys)
         self.listener.start()

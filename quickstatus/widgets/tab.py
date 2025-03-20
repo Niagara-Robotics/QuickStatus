@@ -20,8 +20,7 @@ class TabWidget(QWidget):
         self.tabs = QTabWidget()
         self.tabs.setTabPosition(getattr(self.tabs.TabPosition, self.config['align']))
         self.tabs.setTabBarAutoHide(True)
-        if len(self.tablist) > 1: self.visible = True
-        else: self.visible = False
+        self.visible = len(self.tablist) > 1
         self.setBackgroundRole(QPalette().ColorRole.Base)
         self.setAutoFillBackground(True)
 

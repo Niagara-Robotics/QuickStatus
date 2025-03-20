@@ -1,8 +1,6 @@
 from quickstatus.utils.imports import *
 import toml
 
-widget_refresh = 10
-
 class colours():
     accent_colour = QColor("#0779FF")
     caution_colour = QColor("#FFC600")
@@ -54,3 +52,6 @@ def noNetworkTable(self):
     text_height = font_metrics.height()
     qp.drawText(QPointF(width/2-text_width, height/2+text_height/4), text)
     self.setMinimumHeight(text_height)
+
+widget_refresh = 10
+global_font = "Iosevka Aile"

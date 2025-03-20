@@ -13,9 +13,12 @@
             type = 'status'
         [[window.widget]]
             type = 'lift'
+    
     [[window]]
         [[window.widget]]
             type = 'reef'
+        [[window.widget]]
+            type = 'status'
 
 [network]
     address = "localhost" # Use either IP address or team number
@@ -28,7 +31,7 @@
 [status] # Default settings for Status widgets
     enable-scroll = true # Enables vertical scrolling through the widget
     blink-interval = 0.2 # Time in seconds for each blink cycle. Set to 0 to disable blinking
-    network-table = "fault_manager"
+    network-table = "FMSInfo"
 
 [swerve] # Default settings for Swerve widgets
     base-lock = false # Locks base to single rotation

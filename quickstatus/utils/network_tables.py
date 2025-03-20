@@ -1,5 +1,4 @@
 import ntcore, struct
-from time import sleep
 from quickstatus.utils.imports import *
 from quickstatus.utils.generic import config
 from math import degrees
@@ -34,15 +33,13 @@ class NetworkTables():
 
         def value_updated(event):
             global datatable
-            #print(event.data.topic)
             path = event.data.topic.getName().split("/")
             if "" in path: path.remove("")
-            #path.pop(-1)
-            #path = "".join(path)
             path = path[0]
             topic = event.data.topic.getName().split("/")[-1]
             value = event.data.value.value()
-
+            
+            # properly read structs and stuff
             if isinstance(value, bytes):
                 value = struct.unpack(str(int(len(value)/8))+"d", value)
                 if len(value) % 2 == 0:
@@ -50,20 +47,9 @@ class NetworkTables():
                     for i in range(0, len(value), 2):
                         temp.append(-degrees(value[i+1]))
                     value = temp
+            
             #print(f"({path}) Value updated: {topic} = {value}")
             datatable[path][topic] = value
-        
-        def topic_removed(event):
-            global datatable
-            path = event.data.topic.getName().split("/")
-            if "" in path: path.remove("")
-            #path.pop(-1)
-            #path = "".join(path)
-            path = path[0]
-            topic = event.data.topic.getName().split("/")[-1]
-            inst.getTable("fart").getNumber
-            #print(f"({path}) Topic removed: {topic}")
-            datatable[path].pop(topic)
 
         def connected(event):
             if inst.isConnected():
@@ -72,13 +58,9 @@ class NetworkTables():
                 print(f"NetworkTables disconnnected ({event.data.remote_ip}: {event.data.remote_port})")
 
         self.topicAddedListeners = []
-        self.topicRemovedListeners = []
         for i in tables:
-            self.topicAddedListeners.append (inst.addListener(
+            self.topicAddedListeners.append(inst.addListener(
                 [tables[i] + "/"], ntcore.EventFlags.kValueAll, value_updated
             ))
-            '''self.topicRemovedListeners.append (inst.addListener(
-                [tables[i] + "/"], ntcore.EventFlags.kUnpublish, topic_removed
-            ))'''
 
         self.connectedListener = inst.addConnectionListener(True, connected)
