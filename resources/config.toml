@@ -2,7 +2,6 @@
     save-window-states = true # Saves and restores the position and current tab of all windows
     [[window]] # Defines new window
         enabled = true
-        global-hotkeys = true
         align = 'North'
         [[window.widget]] # Defines new widget
             type = 'intake' # Defines widget type

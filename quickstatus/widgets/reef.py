@@ -37,7 +37,6 @@ class ReefWidget(QWidget):
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
         self.ab = 0
-        self.nt_connected = False
         
         self.load_coordinates()
 
@@ -79,11 +78,8 @@ class ReefWidget(QWidget):
 
         # ensure NetworkTable data exists
         table = datatable['SmartDashboard']
-        table_req = []
-        if self.nt_connected == False:
-            self.nt_connected = all(k in table for k in table_req)
 
-        if NetworkTables.inst.isConnected() and self.nt_connected or True:
+        if NetworkTables.inst.isConnected() or True:
             scale = cw/600
             qp.scale(scale,scale)
             qp.translate(cw/scale-450,ch/scale+160)

@@ -18,14 +18,11 @@ class SwerveWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
-        self.base_rot = 0
-        self.wheel_rot = [0,0,0,0]
-        self.velocities = [1,1,1,1]
+        self.velocities = [0,0,0,0]
         self.targ_velocities = [0,0,0,0]
-        self.powers = [0.5,0.5,0.5,0.5]
+        self.powers = [0,0,0,0]
         self.wheel_status = [1,1,1,1]
         self.base_status = 0
-        self.nt_connected = False
 
     def resizeEvent(self, event):
         self.width_cache = self.width()
@@ -44,45 +41,40 @@ class SwerveWidget(QWidget):
         self.wheel_size = 90
 
         # ensure NetworkTable data exists
-        base = datatable[config['swerve']['base-table']]
-        wheels = datatable[config['swerve']['wheel-table']]
-        base_req = ['odometry_pose']
-        wheels_req = ['module_positions']
-        if self.nt_connected == False:
-            self.nt_connected = all(k in base for k in base_req) and all(k in wheels for k in wheels_req)
+        base_table = datatable[config['swerve']['base-table']]
+        wheels_table = datatable[config['swerve']['wheel-table']]
         
-        if NetworkTables.inst.isConnected() and self.nt_connected:
+        if NetworkTables.inst.isConnected():
             scale = cw/400
             qp.scale(scale,scale)
             qp.translate(cw/scale,ch/scale)
 
             # setup config and NetworkTable data
-            base = base['odometry_pose']
-            wheels = wheels['module_positions']
-            
-            base_lock = self.config['base-lock']
-            wheel_lock = self.config['wheel-lock']
-            self.base_rot = -degrees(base[2]) if not base_lock else 0
-            self.wheel_rot = wheels if not wheel_lock else [0, 0, 0, 0]
-
-            # draw base
-            qp.rotate(self.base_rot)
+            self.check_data(base_table, wheels_table)
 
             self.front_size = self.base_size/3
             self.base_x = self.base_size*-0.5
             self.base_y = self.base_x
 
-            self.draw_base(qp)
-
-            # draw wheels
             self.wheel_positions = [
                 (self.base_x, self.base_y), 
                 (-self.base_x, self.base_y),
                 (self.base_x, -self.base_y),
                 (-self.base_x, -self.base_y)
             ]
+            
+            base_lock = self.config['base-lock']
+            wheel_lock = self.config['wheel-lock']
+            
+            if self.base is not None: 
+                self.base_rot = -degrees(self.base) if not base_lock else 0
+                qp.rotate(self.base_rot)
 
-            self.draw_wheels(qp)
+                self.draw_base(qp)
+
+            if self.wheels is not None: 
+                self.wheel_rot = self.wheels if not wheel_lock else [0, 0, 0, 0]
+                self.draw_wheels(qp)
 
         else: noNetworkTable(self)
     
@@ -96,6 +88,13 @@ class SwerveWidget(QWidget):
         self.setPalette(palette)
         background_colour = palette.color(palette.ColorRole.Window)
         self.colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
+    
+    def check_data(self, base, wheels):
+        try: self.base = base['odometry_pose'][2]
+        except: self.base = None
+
+        try: self.wheels = wheels['module_positions']
+        except: self.wheels = None
     
     def draw_base(self, qp:QPainter):
         qp.setPen(QPen(self.colour_chart[self.base_status], 7))

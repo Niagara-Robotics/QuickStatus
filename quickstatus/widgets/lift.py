@@ -20,7 +20,6 @@ class LiftWidget(QWidget):
         self.old_dt = int(monotonic()*150)
         self.wr = 0
         self.rot_right = True
-        self.nt_connected = False
 
         self.load_gripper()
 
@@ -50,28 +49,22 @@ class LiftWidget(QWidget):
         # ensure NetworkTable data exists
         table = datatable['lift']
         dash = datatable['SmartDashboard']
-        table_req = ['encoder_position', 'position', 'calibration_state']
-        dash_req = ['gripper_distance', 'gripper_ambient', 'gripper_coral']
-        if self.nt_connected == False:
-            self.nt_connected = all(k in table for k in table_req) and all(k in dash for k in dash_req)
 
-        if NetworkTables.inst.isConnected() and self.nt_connected:
-            qp.setBrush(foreground_colour)
-            qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
+        if NetworkTables.inst.isConnected():
             scale = cw/525
             qp.scale(scale,scale)
             qp.translate(cw/scale-250,ch/scale+50)
-        
-            self.gripper_rot = table['encoder_position']*360
-            self.lift_height = table['position']/4.2
 
-            self.draw_lift(qp)
+            self.check_data(table, dash)
+
+            if self.lift_height is not None or self.gripper_rot is not None:
+                self.draw_lift(qp)
             
             subwidget_pos = (500, 0)
             self.draw_arm_rotation(qp, subwidget_pos)
-            self.draw_sensor_values(qp, dash, subwidget_pos)
-            self.draw_gripper_subwidget(qp, dash, 50, subwidget_pos, dt)
-            self.draw_calibration(qp, table, (150, 525))
+            if self.gripper_distance is not None: self.draw_sensor_values(qp, subwidget_pos)
+            self.draw_gripper_subwidget(qp, 50, subwidget_pos, dt)
+            if self.calibration_state is not None: self.draw_calibration(qp, (150, 525))
             
         else: noNetworkTable(self)
 
@@ -86,20 +79,44 @@ class LiftWidget(QWidget):
         background_colour = palette.color(palette.ColorRole.Window)
         self.colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
     
+    def check_data(self, table, dash):
+        try: self.gripper_rot = table['encoder_position']*360
+        except: self.gripper_rot = None
+
+        try: self.lift_height = table['position']/4.2
+        except: self.lift_height = None
+
+        try: self.calibration_state = table['calibration_state']
+        except: self.calibration_state = None
+
+        try: self.gripper_distance = dash['gripper_distance']
+        except: self.gripper_distance = None
+
+        try: self.gripper_coral = dash['gripper_coral']
+        except: self.gripper_coral = None
+
+        try: self.gripper_ambient = dash['gripper_ambient']
+        except: self.gripper_ambient = None
+    
     def draw_lift(self, qp:QPainter):
+        qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
         qp.setBrush(Qt.BrushStyle.NoBrush)
         qp.drawRoundedRect(QRectF(-125,-25,250,550), 0,0)
-        qp.drawRoundedRect(QRectF(-100,-self.lift_height*500,200,500), 0,0)
+        if self.lift_height is not None:
+            qp.drawRoundedRect(QRectF(-100,-self.lift_height*500,200,500), 0,0)
 
         # arm
-        self.draw_lift_arm(qp, QPolygonF(self.gripper_rot_points))
+        if self.gripper_rot is not None:
+            self.draw_lift_arm(qp, QPolygonF(self.gripper_rot_points))
 
         # arm line
-        self.draw_lift_line(qp)
+        if self.lift_height is not None:
+            self.draw_lift_line(qp)
     
     def draw_lift_arm(self, qp:QPainter, polygon):
         qp.save()
-        qp.translate(0,-self.lift_height*500+500)
+        height = self.lift_height if self.lift_height is not None else 0.5
+        qp.translate(0,-height*500+500)
         qp.rotate(self.gripper_rot*50)
         # draw arm outline
         qp.setPen(QPen(background_colour, 24))
@@ -116,12 +133,14 @@ class LiftWidget(QWidget):
    
     def draw_lift_line(self, qp:QPainter):
         qp.setPen(QPen(background_colour, 24))
-        al_trans = -self.lift_height*500+500
+        height = self.lift_height if self.lift_height is not None else 0.5
+        al_trans = -height*500+500
         qp.drawLine(QLineF(-100,al_trans,100,al_trans))
         qp.setPen(QPen(foreground_colour, 8))
         qp.drawLine(QLineF(-100,al_trans,100,al_trans))
     
     def draw_arm_rotation(self, qp:QPainter, pos:tuple):
+        qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
         qp.save()
         arr_size = 60
         grip_size = 125
@@ -151,9 +170,9 @@ class LiftWidget(QWidget):
         qp.drawLine(QPointF(-arrow_width, 0), QPointF(arrow_width, 0))
         qp.restore()
     
-    def draw_sensor_values(self, qp:QPainter, dash:dict, wheel_pos:tuple):
-        lift_sensor = int(dash['gripper_distance'])
-        ambient = dash['gripper_ambient']
+    def draw_sensor_values(self, qp:QPainter, wheel_pos:tuple):
+        lift_sensor = int(self.gripper_distance)
+        ambient = self.gripper_ambient if self.gripper_ambient is not None else 0
         if ambient > 200:
             badness_level = 4
             text = "nil"
@@ -171,20 +190,21 @@ class LiftWidget(QWidget):
         qp.setPen(QPen(self.colour_chart[badness_level], 8, Qt.PenStyle.DashLine, join=Qt.PenJoinStyle.RoundJoin))
         qp.drawRect(QRectF(wheel_pos[0]-ls_width/2-25,wheel_pos[1]-25,ls_width+50,ls_height+25))
     
-    def draw_gripper_subwidget(self, qp:QPainter, dash:dict, wheel_size:int, wheel_pos:tuple, dt:float):
+    def draw_gripper_subwidget(self, qp:QPainter, wheel_size:int, wheel_pos:tuple, dt:float):
         # self.rot_right = datatable...
         if (random.randrange(1,50) == 1): self.rot_right = not self.rot_right
         rot = self.rot_right.conjugate()*2-1
 
         translate = QPoint(wheel_pos[0]-wheel_size*2, wheel_pos[1]-475)
         qp.translate(translate)
-        self.draw_gripper_coral(qp, wheel_size, dash)  
+        if self.gripper_coral:
+            self.draw_gripper_coral(qp, wheel_size)  
         self.draw_gripper_shape(qp, wheel_size)
         self.draw_gripper_wheels(qp, 50, dt, rot)
         qp.translate(-translate)
     
-    def draw_calibration(self, qp:QPainter, table:dict, cal_pos:tuple):
-        cal_state = table['calibration_state']
+    def draw_calibration(self, qp:QPainter, cal_pos:tuple):
+        cal_state = self.calibration_state
         cal_text = "Calibration"
         cal_dist = 50
         cal_width = self.font_met.horizontalAdvance(cal_text)
@@ -240,10 +260,10 @@ class LiftWidget(QWidget):
         qp.drawLine(QPointF(line_width/2,line_pos), QPointF(line_width/2,line_pos+line_height*2))
         qp.translate(-wheel_size*2, 0)
     
-    def draw_gripper_coral(self, qp:QPainter, wheel_size:int, dash:dict):
+    def draw_gripper_coral(self, qp:QPainter, wheel_size:int):
         qp.setPen(QPen(foreground_colour, 20))
-        dist = dash['gripper_distance']
-        if dash['gripper_coral']: qp.drawEllipse(QPointF(wheel_size*2,35-dist),30,30)
+        dist = self.gripper_distance if self.gripper_distance is not None else 0 
+        qp.drawEllipse(QPointF(wheel_size*2,35-dist),30,30)
     
     def draw_gripper_wheels(self, qp: QPainter, wheel_size: int, dt: float, rot: float):
         # setup variables

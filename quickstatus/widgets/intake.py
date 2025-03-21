@@ -19,7 +19,21 @@ class IntakeWidget(QWidget):
         self.arrow_angle = 0
         self.rott = 0
         self.old_dt = int(monotonic()*150)
-        self.nt_connected = False
+
+        self.intake_states = [
+            'Standby',
+            'Algae Pickup',
+            'Algae Locked',
+            'Coral VA',
+            'Coral Horizontal',
+            'Coral VB'
+        ]
+        self.intake_actions = [
+            'Standby',
+            'Pickup Coral',
+            'Pickup Algae',
+            'Eject Algae'
+        ]
     
     def resizeEvent(self, event):
         self.width_cache = self.width()
@@ -36,21 +50,21 @@ class IntakeWidget(QWidget):
         dt = int(monotonic() * 150)
         
         table = datatable['intake']
-        table_req = ['ambient', 'encoder_position', 'distance', 'present', 'voltage_out']
-        if self.nt_connected == False:
-            self.nt_connected = all(k in table for k in table_req)
 
-        if NetworkTables.inst.isConnected() and self.nt_connected:
+        if NetworkTables.inst.isConnected():
             scale = cw/500
             qp.scale(scale, scale)
             qp.translate(cw/scale,ch/scale)
 
-            self.draw_intake(qp)
+            self.check_data(table)
+
+            if self.encoder_position is not None or self.voltage_out is not None:
+                self.draw_intake(qp, dt)
 
             font = QFont(global_font)
 
-            self.draw_state(qp, font)
-            self.draw_bay(qp, (125, -125), table, font)
+            if self.state is not None or self.action is not None: self.draw_state(qp, font)
+            if self.distance is not None: self.draw_bay(qp, (125, -125), font)
         
         else: noNetworkTable(self)
     
@@ -65,7 +79,29 @@ class IntakeWidget(QWidget):
         background_colour = palette.color(palette.ColorRole.Window)
         self.colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
     
-    def draw_intake(self, qp:QPainter, dt:float, table:dict):
+    def check_data(self, table):
+        try: self.ambient = table['ambient']
+        except: self.ambient = None
+
+        try: self.encoder_position = table['encoder_position']
+        except: self.encoder_position = None
+
+        try: self.distance = table['distance']
+        except: self.distance = None
+
+        try: self.present = table['present']
+        except: self.present = None
+
+        try: self.voltage_out = table['voltage_out']
+        except: self.voltage_out = None
+
+        try: self.state = self.intake_states[int(table['state'])]
+        except: self.state = None
+
+        try: self.action = self.intake_actions[int(table['action'])]
+        except: self.action = None
+    
+    def draw_intake(self, qp:QPainter, dt:float):
         # setup variables
         qp.setPen(QPen(foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
         qp.setBrush(Qt.BrushStyle.NoBrush)
@@ -75,7 +111,7 @@ class IntakeWidget(QWidget):
         arc_dist = 50
         arc_angle = 90*16
         arc_cen = (arc_pos[0]+arc_size/2,arc_pos[1]+arc_size/2)
-        arc_rot = table['encoder_position']*-360
+        arc_rot = self.encoder_position*-360 if self.encoder_position is not None else 0
         
         time_dif = (dt-self.old_dt)
         self.arrow_angle += time_dif/2
@@ -85,19 +121,18 @@ class IntakeWidget(QWidget):
         # draw
         qp.translate(arc_cen[0], arc_cen[1]+125)
 
-        self.draw_bumper(qp)
+        self.draw_bumper(qp, arc_size, arc_dist)
         
         qp.translate(0, -arc_dist/2-arc_size/2)
         qp.rotate(arc_rot)
-
-        self.draw_intake_frame(qp, arc_size, arc_dist, arc_angle)
+        if self.encoder_position is not None: self.draw_intake_frame(qp, arc_size, arc_dist, arc_angle)
 
         wheel_num = 4
         wheel_size = 1.3
         qp.translate(0, -(-arc_dist/2-arc_size/2))
         
-        self.draw_intake_wheels(qp, wheel_num, arc_size, arc_size, arc_dist, wheel_size)
-        self.draw_wheel_velocity(qp, table['voltage_out'], arrow_angle, arc_size, arc_dist, arc_angle)
+        if self.encoder_position is not None: self.draw_intake_wheels(qp, wheel_num, arc_size, arc_dist, wheel_size)
+        if self.voltage_out is not None: self.draw_wheel_velocity(qp, self.voltage_out, arrow_angle, arc_size, arc_dist, arc_angle)
         
         qp.rotate(-arc_rot)
         qp.translate(-arc_cen[0], -(arc_pos[1]-arc_dist/2))
@@ -152,24 +187,24 @@ class IntakeWidget(QWidget):
         qp.setPen(QPen(foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
         qp.setBrush(Qt.BrushStyle.NoBrush)
 
-        qp.drawRect(QRectF(-415,285,580,130))
+        action_text = self.action
+        state_text = self.state
 
-        action_text = "Algae Pickup"
-        state_text = "Coral VA"
+        if self.action is not None:
+            qp.drawRect(QRectF(-415,285,580,130))
+            qp.drawText(-380,377, action_text)
 
-        qp.drawText(-380,377, action_text)
         font.setPixelSize(70)
         qp.setFont(font)
-        qp.setF
-        qp.drawText(-380,500, state_text)
+        if self.state is not None:qp.drawText(-380,500, state_text)
         qp.translate(0,200)
     
-    def draw_bay(self, qp:QPainter, pos:tuple, table:dict, font:QFont):
+    def draw_bay(self, qp:QPainter, pos:tuple, font:QFont):
         font.setPixelSize(70)
         qp.setFont(font)
         qp.translate(pos[0],pos[1])
-        bay_num = round(table['distance'])
-        bay_amb = round(table['ambient'])
+        bay_num = round(self.distance)
+        bay_amb = round(self.ambient) if self.ambient is not None else 0
         if bay_amb > 32:
             badness_level = 4
             text = "nil"
@@ -182,7 +217,7 @@ class IntakeWidget(QWidget):
         qp.drawLine(QLineF(-75,100,75,100))
         
         qp.setPen(QPen(foreground_colour, 25))
-        if table['present']: qp.drawEllipse(QPointF(0,25),50,50)
+        if self.present: qp.drawEllipse(QPointF(0,25),50,50)
 
         qp.drawText(125,75, text)
         qp.translate(-pos[0],-pos[1])
