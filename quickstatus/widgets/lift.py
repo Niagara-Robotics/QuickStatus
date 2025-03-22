@@ -12,7 +12,7 @@ class LiftWidget(QWidget):
 
         restoreWindow(self)
 
-        self.setWindowTitle('QuickStatus (Lift State)')
+        self.setWindowTitle('Lift')
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)

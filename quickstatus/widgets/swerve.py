@@ -12,7 +12,7 @@ class SwerveWidget(QWidget):
 
         restoreWindow(self)
 
-        self.setWindowTitle('QuickStatus (Swerve State)')
+        self.setWindowTitle('Swerve')
 
         # Adjust the timer interval to match the monitor's refresh rate
         self.timer = QTimer(self)

@@ -12,7 +12,7 @@ class IntakeWidget(QWidget):
 
         restoreWindow(self)
 
-        self.setWindowTitle('QuickStatus (Intake)')
+        self.setWindowTitle('Intake')
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)

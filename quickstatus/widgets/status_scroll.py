@@ -11,7 +11,7 @@ class StatusScrollWidget(QWidget):
 
         restoreWindow(self)
 
-        self.setWindowTitle('QuickStatus (Status Lights)')
+        self.setWindowTitle('Status Lights')
         widget = QWidget()
         layout = QGridLayout(widget)
         layout.setContentsMargins(0,0,0,0)

@@ -32,7 +32,7 @@ class ReefWidget(QWidget):
 
         restoreWindow(self)
 
-        self.setWindowTitle('QuickStatus (Reef)')
+        self.setWindowTitle('Reef')
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)

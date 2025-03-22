@@ -5,6 +5,7 @@ from quickstatus.widgets.swerve import SwerveWidget
 from quickstatus.widgets.lift import LiftWidget
 from quickstatus.widgets.intake import IntakeWidget
 from quickstatus.widgets.reef import ReefWidget
+from quickstatus.widgets.info_bar import InfoBar
 
 class TabWidget(QWidget):
     def __init__(self, wid, conf, tabs):
@@ -18,6 +19,7 @@ class TabWidget(QWidget):
         widget = QWidget()
         self.layout = QGridLayout(widget)
         self.tabs = QTabWidget()
+        self.tabs.setLayout(QGridLayout())
         self.tabs.setTabPosition(getattr(self.tabs.TabPosition, self.config['align']))
         self.tabs.setTabBarAutoHide(True)
         self.visible = len(self.tablist) > 1
@@ -45,7 +47,7 @@ class TabWidget(QWidget):
         self.setLayout(self.layout)
 
         self.setWindowTitle('QuickStatus (Tabs)')
-        if not self.visible: self.setWindowTitle(self.tabs.currentWidget().windowTitle())
+        if not self.visible: self.setWindowTitle(f"QuickStatus({self.tabs.currentWidget().windowTitle()})")
 
         selectedTab = self.settings.value("selectedTab")
         if selectedTab and config['general']['save-window-states']:
@@ -57,21 +59,33 @@ class TabWidget(QWidget):
         if self.config['global-hotkeys'] and hasattr(key, 'char') and hasattr(key.char, 'isnumeric') and  key.char.isnumeric():
             key_text = (int(key.char)-1) % 10
             self.tabs.setCurrentIndex(key_text)
+    def stack_widgets(self, top, bottom):
+        title = top.windowTitle()
+        stack = QWidget()
+        stack.setLayout(QGridLayout())
+        stack.layout().setContentsMargins(0,0,0,0)
+        stack.layout().setSpacing(0)
+        bottom = bottom(title)
+        bottom.setFixedHeight(30)
+        stack.layout().addWidget(top, 0,0,1,1)
+        stack.layout().addWidget(bottom, 1,0,1,1)
+
+        self.tabs.addTab(stack, top.windowTitle())
 
     def status_tab(self, conf):
-        self.tabs.addTab(StatusScrollWidget(wid = self.wid, conf = conf), "Status Lights")
+        self.stack_widgets(StatusScrollWidget(wid = self.wid, conf = conf), InfoBar)
 
     def swerve_tab(self, conf):
-        self.tabs.addTab(SwerveWidget(wid = self.wid, conf = conf), "Swerve State")
+        self.stack_widgets(SwerveWidget(wid = self.wid, conf = conf), InfoBar)
 
     def lift_tab(self, conf):
-        self.tabs.addTab(LiftWidget(wid = self.wid, conf = conf), "Lift State")
+        self.stack_widgets(LiftWidget(wid = self.wid, conf = conf), InfoBar)
         
     def intake_tab(self, conf):
-        self.tabs.addTab(IntakeWidget(wid = self.wid, conf = conf), "Intake")
+        self.stack_widgets(IntakeWidget(wid = self.wid, conf = conf), InfoBar)
 
     def reef_tab(self, conf):
-        self.tabs.addTab(ReefWidget(wid = self.wid, conf = conf), "Reef")
+        self.stack_widgets(ReefWidget(wid = self.wid, conf = conf), InfoBar)
 
     def keyPressEvent(self, event):
         if isinstance(event, QKeyEvent) and not self.config['global-hotkeys']:
