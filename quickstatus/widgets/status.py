@@ -1,5 +1,5 @@
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import widget_refresh, colours, noNetworkTable
+from quickstatus.utils.generic import widget_refresh, colours, noNetworkTable, global_font
 from quickstatus.utils.network_tables import datatable, NetworkTables
 from math import ceil
 
@@ -117,7 +117,7 @@ class StatusWidget(QWidget):
         text = i
         text_x = self.x + self.radius + 6
         text_y = self.y+13
-        font = QFont('Iosevka Aile')
+        font = QFont(global_font)
         font.setPixelSize(15)
         qp.setFont(font)
         if status != 0 and self.is_flashing: qp.setPen(QColor('#FFFFFF'))

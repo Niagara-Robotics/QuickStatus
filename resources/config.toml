@@ -1,5 +1,6 @@
 [general]
     save-window-states = true # Saves and restores the position and current tab of all windows
+    global_font = 'B612' # 'B612', and 'Iosevka Aile' are built-in
     [[window]] # Defines new window
         enabled = true
         align = 'North'

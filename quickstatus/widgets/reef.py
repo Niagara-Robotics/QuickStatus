@@ -177,7 +177,7 @@ class ReefWidget(QWidget):
     def draw_place_text(self, qp:QPainter, selected:int):
         # setup variables
         place_level = "L"+str(selected)
-        font = QFont('Iosevka Aile')
+        font = QFont(global_font)
         font.setBold(True)
         font.setPixelSize(160)
         ls_width = QFontMetrics(font).horizontalAdvance(place_level)

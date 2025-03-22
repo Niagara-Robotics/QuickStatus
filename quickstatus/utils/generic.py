@@ -54,4 +54,4 @@ def noNetworkTable(self):
     self.setMinimumHeight(text_height)
 
 widget_refresh = 10
-global_font = "Iosevka Aile"
+global_font = config['general']['global_font']

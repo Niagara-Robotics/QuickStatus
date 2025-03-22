@@ -53,18 +53,21 @@ class LiftWidget(QWidget):
         if NetworkTables.inst.isConnected():
             scale = cw/525
             qp.scale(scale,scale)
-            qp.translate(cw/scale-250,ch/scale+50)
+            qp.translate(cw/scale-250,ch/scale+130)
 
             self.check_data(table, dash)
+
+            table['encoder_position'] = 1
+            table['position'] = 4.2
 
             if self.lift_height is not None or self.gripper_rot is not None:
                 self.draw_lift(qp)
             
-            subwidget_pos = (500, 0)
+            subwidget_pos = (475, -150)
             self.draw_arm_rotation(qp, subwidget_pos)
             if self.gripper_distance is not None: self.draw_sensor_values(qp, subwidget_pos)
             self.draw_gripper_subwidget(qp, 50, subwidget_pos, dt)
-            if self.calibration_state is not None: self.draw_calibration(qp, (150, 525))
+            if self.calibration_state is not None: self.draw_calibration(qp, (subwidget_pos[0], subwidget_pos[1]+525))
             
         else: noNetworkTable(self)
 
@@ -116,7 +119,7 @@ class LiftWidget(QWidget):
     def draw_lift_arm(self, qp:QPainter, polygon):
         qp.save()
         height = self.lift_height if self.lift_height is not None else 0.5
-        qp.translate(0,-height*500+500)
+        qp.translate(0,-height*1000+500)
         qp.rotate(self.gripper_rot*50)
         # draw arm outline
         qp.setPen(QPen(background_colour, 24))
@@ -134,7 +137,7 @@ class LiftWidget(QWidget):
     def draw_lift_line(self, qp:QPainter):
         qp.setPen(QPen(background_colour, 24))
         height = self.lift_height if self.lift_height is not None else 0.5
-        al_trans = -height*500+500
+        al_trans = -height*1000+500
         qp.drawLine(QLineF(-100,al_trans,100,al_trans))
         qp.setPen(QPen(foreground_colour, 8))
         qp.drawLine(QLineF(-100,al_trans,100,al_trans))
@@ -185,6 +188,7 @@ class LiftWidget(QWidget):
         self.font_met = QFontMetrics(self.font)
         ls_width = self.font_met.horizontalAdvance(text)
         ls_height = self.font_met.height()
+        
         qp.setFont(self.font)
         qp.drawText(QPointF(wheel_pos[0]-ls_width/2,wheel_pos[1]+60),text)
         qp.setPen(QPen(self.colour_chart[badness_level], 8, Qt.PenStyle.DashLine, join=Qt.PenJoinStyle.RoundJoin))
@@ -204,29 +208,46 @@ class LiftWidget(QWidget):
         qp.translate(-translate)
     
     def draw_calibration(self, qp:QPainter, cal_pos:tuple):
-        cal_state = self.calibration_state
-        cal_text = "Calibration"
-        cal_dist = 50
-        cal_width = self.font_met.horizontalAdvance(cal_text)
-        cal_height = self.font_met.height()
-
-        # draw text
         qp.setPen(QPen(foreground_colour, 8))
         qp.setBrush(Qt.BrushStyle.NoBrush)
-        qp.drawText(cal_pos[0], cal_pos[1], cal_text)
+        
+        cal_state = self.calibration_state
+        cal_text = "Calibration"
+        cal_dist = 110
+        max_width = 500
+        self.font = QFont(global_font)
+        self.font.setPixelSize(70)
+        qp.setFont(self.font)
+        self.font_met = QFontMetrics(self.font)
+        qp.save()
+        cal_width = self.font_met.horizontalAdvance(cal_text)
+        cal_width_2 = int(cal_width/2)
+        cal_height = self.font_met.height()
+        if cal_width >= max_width: 
+            scale = 1/(cal_width/max_width)
+            qp.scale(scale, 1)
+        else: scale = 1
+
+        # draw text
+        qp.drawText(QPointF((cal_pos[0]/scale-cal_width_2), cal_pos[1]), cal_text)
+        qp.restore()
         qp.save()
 
         # draw icon
-        qp.translate(cal_pos[0]+cal_width+cal_dist+25, cal_pos[1]-cal_height/4)
-        qp.rotate(45)
+        qp.translate(cal_pos[0], cal_pos[1]-cal_height/4+cal_dist)
+        if cal_state != 0: qp.rotate(45)
         xs = 30
         cs = 25
         if cal_state == 0 or cal_state == 3:
-            qp.drawLines([
-                QPoint(-xs,0),
-                QPoint(xs,0),
-                QPoint(0,-xs),
-                QPoint(0,xs)])
+            if cal_state == 3:
+                qp.drawLines([
+                    QPoint(-xs, 0),
+                    QPoint(xs, 0),
+                    QPoint(0, -xs),
+                    QPoint(0, xs)])
+            else:
+                qp.drawPoints([QPoint(-xs, 0), QPoint(0, 0), QPoint(xs, 0)])
+
             qp.setPen(QPen(colours.death_colour, 4))
         elif cal_state == 1:
             qp.setPen(QPen(colours.caution_colour, 8))
