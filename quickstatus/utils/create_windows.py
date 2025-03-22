@@ -35,6 +35,7 @@ class WindowCreator(QMainWindow):
         def sendKeys(key):
             for widget in self.widgets:
                 if isinstance(widget, TabWidget): widget.on_press(key)
-
-        self.listener = keyboard.Listener(on_press=sendKeys)
-        self.listener.start()
+        
+        if config['general']['global-hotkeys']:
+            self.listener = keyboard.Listener(on_press=sendKeys)
+            self.listener.start()
