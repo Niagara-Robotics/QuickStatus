@@ -4,6 +4,7 @@ from quickstatus.utils.network_tables import datatable, NetworkTables
 import random
 
 class LiftWidget(QWidget):
+    name = 'Lift'
     def __init__(self, wid, conf):
         super(LiftWidget, self).__init__()
         self.wid = wid
@@ -12,7 +13,6 @@ class LiftWidget(QWidget):
 
         restoreWindow(self)
 
-        self.setWindowTitle('Lift')
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
@@ -72,15 +72,14 @@ class LiftWidget(QWidget):
         else: noNetworkTable(self)
 
     def setup_palette(self):
-        global foreground_colour, background_colour
         palette = self.palette()
-        foreground_colour = palette.color(palette.ColorRole.Text)
-        foreground_colour.setAlpha(255)
+        self.foreground_colour = palette.color(palette.ColorRole.Text)
+        self.foreground_colour.setAlpha(255)
         dark = palette.color(palette.ColorRole.Base).lighter(160)
         if sys.platform == 'darwin': palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
-        background_colour = palette.color(palette.ColorRole.Window)
-        self.colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
+        self.background_colour = palette.color(palette.ColorRole.Window)
+        self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
     
     def check_data(self, table, dash):
         try: self.gripper_rot = table['encoder_position']*360
@@ -102,7 +101,7 @@ class LiftWidget(QWidget):
         except: self.gripper_ambient = None
     
     def draw_lift(self, qp:QPainter):
-        qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
+        qp.setPen(QPen(self.foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
         qp.setBrush(Qt.BrushStyle.NoBrush)
         qp.drawRoundedRect(QRectF(-125,-25,250,550), 0,0)
         if self.lift_height is not None:
@@ -122,28 +121,28 @@ class LiftWidget(QWidget):
         qp.translate(0,-height*1000+500)
         qp.rotate(self.gripper_rot*50)
         # draw arm outline
-        qp.setPen(QPen(background_colour, 24))
+        qp.setPen(QPen(self.background_colour, 24))
         qp.drawPolygon(polygon)
 
-        qp.setBrush(foreground_colour)
-        qp.setPen(QPen(foreground_colour, 4, join=Qt.PenJoinStyle.RoundJoin))
+        qp.setBrush(self.foreground_colour)
+        qp.setPen(QPen(self.foreground_colour, 4, join=Qt.PenJoinStyle.RoundJoin))
         qp.drawPolygon(polygon)
-        qp.setBrush(background_colour)
-        qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
+        qp.setBrush(self.background_colour)
+        qp.setPen(QPen(self.foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
         qp.drawEllipse(QPoint(0,0),25,25)
 
         qp.restore()
    
     def draw_lift_line(self, qp:QPainter):
-        qp.setPen(QPen(background_colour, 24))
+        qp.setPen(QPen(self.background_colour, 24))
         height = self.lift_height if self.lift_height is not None else 0.5
         al_trans = -height*1000+500
         qp.drawLine(QLineF(-100,al_trans,100,al_trans))
-        qp.setPen(QPen(foreground_colour, 8))
+        qp.setPen(QPen(self.foreground_colour, 8))
         qp.drawLine(QLineF(-100,al_trans,100,al_trans))
     
     def draw_arm_rotation(self, qp:QPainter, pos:tuple):
-        qp.setPen(QPen(foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
+        qp.setPen(QPen(self.foreground_colour, 8, join=Qt.PenJoinStyle.RoundJoin))
         qp.save()
         arr_size = 60
         grip_size = 125
@@ -151,7 +150,7 @@ class LiftWidget(QWidget):
         arr_color = self.palette().color(self.palette().ColorRole.Text)
         qp.translate(pos[0], pos[1]+grip_size*2+25)
         qp.drawEllipse(QPoint(0,0),grip_size,grip_size)
-        qp.setPen(QPen(foreground_colour, 4))
+        qp.setPen(QPen(self.foreground_colour, 4))
 
         for i in range(4):
             lw = 1.5-(i%2 * 0.25)
@@ -164,12 +163,12 @@ class LiftWidget(QWidget):
             qp.setPen(QPen(arr_color, 4))
             qp.rotate(22.5)
         
-        qp.setPen(QPen(foreground_colour, 4))
+        qp.setPen(QPen(self.foreground_colour, 4))
         qp.rotate(12-90)
-        qp.setBrush(foreground_colour)
+        qp.setBrush(self.foreground_colour)
         qp.drawPolygon([QPointF(-arrow_width,-arr_size/2),QPointF(-arrow_width,arr_size/2),QPointF(-arr_size/1.5-arrow_width,0)])
         qp.drawPolygon([QPointF(arrow_width,-arr_size/2),QPointF(arrow_width,arr_size/2),QPointF(arr_size/1.5+arrow_width,0)])
-        qp.setPen(QPen(foreground_colour, 12))
+        qp.setPen(QPen(self.foreground_colour, 12))
         qp.drawLine(QPointF(-arrow_width, 0), QPointF(arrow_width, 0))
         qp.restore()
     
@@ -208,7 +207,7 @@ class LiftWidget(QWidget):
         qp.translate(-translate)
     
     def draw_calibration(self, qp:QPainter, cal_pos:tuple):
-        qp.setPen(QPen(foreground_colour, 8))
+        qp.setPen(QPen(self.foreground_colour, 8))
         qp.setBrush(Qt.BrushStyle.NoBrush)
         
         cal_state = self.calibration_state
@@ -216,7 +215,7 @@ class LiftWidget(QWidget):
         cal_dist = 110
         max_width = 500
         self.font = QFont(global_font)
-        self.font.setPixelSize(70)
+        self.font.setPixelSize(80)
         qp.setFont(self.font)
         self.font_met = QFontMetrics(self.font)
         qp.save()
@@ -248,9 +247,9 @@ class LiftWidget(QWidget):
             else:
                 qp.drawPoints([QPoint(-xs, 0), QPoint(0, 0), QPoint(xs, 0)])
 
-            qp.setPen(QPen(colours.death_colour, 4))
+            qp.setPen(QPen(Colours.death_colour, 4))
         elif cal_state == 1:
-            qp.setPen(QPen(colours.caution_colour, 8))
+            qp.setPen(QPen(Colours.caution_colour, 8))
             qp.drawArc(QRectF(-40,-40, 80, 80 ), int(monotonic()*-4800), 960)
         elif cal_state == 2:
             pos = (10,20)
@@ -258,13 +257,13 @@ class LiftWidget(QWidget):
                 QPoint(pos[0]-cs, pos[1]),
                 QPoint(pos[0],pos[1]),
                 QPoint(pos[0],pos[1]-cs*2)])
-            qp.setPen(QPen(colours.accent_colour, 4))
+            qp.setPen(QPen(Colours.accent_colour, 4))
             
         if cal_state != 1: qp.drawEllipse(QPoint(0,0),50,50)
         qp.restore()
     
     def draw_gripper_shape(self, qp:QPainter, wheel_size:int):
-        qp.setPen(QPen(foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap))
+        qp.setPen(QPen(self.foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap))
         bend_size = 50
         line_width = 50
         line_height = 100
@@ -282,7 +281,7 @@ class LiftWidget(QWidget):
         qp.translate(-wheel_size*2, 0)
     
     def draw_gripper_coral(self, qp:QPainter, wheel_size:int):
-        qp.setPen(QPen(foreground_colour, 20))
+        qp.setPen(QPen(self.foreground_colour, 20))
         dist = self.gripper_distance if self.gripper_distance is not None else 0 
         qp.drawEllipse(QPointF(wheel_size*2,35-dist),30,30)
     
@@ -300,23 +299,23 @@ class LiftWidget(QWidget):
         self.draw_gripper_wheel(qp, QPointF(wheel_size*4, 0), arc_size, wheel_size, rot, angle2)
     
     def draw_gripper_wheel(self, qp: QPainter, position: QPointF, arc_size: float, wheel_size: int, rot: float, angle: float):
-        qp.setPen(QPen(foreground_colour, 8))
+        qp.setPen(QPen(self.foreground_colour, 8))
         qp.setBrush(Qt.BrushStyle.NoBrush)
         # draw circle
         qp.translate(position)
         qp.drawEllipse(QPoint(0, 0), wheel_size, wheel_size)
 
         # draw velocity outline
-        qp.setPen(QPen(background_colour, 24))
+        qp.setPen(QPen(self.background_colour, 24))
         qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
 
         # draw velocity
-        qp.setPen(QPen(colours.velocity_colour, 8))
+        qp.setPen(QPen(Colours.velocity_colour, 8))
         qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
 
         # draw arrow
         qp.setPen(Qt.PenStyle.NoPen)
-        qp.setBrush(foreground_colour)
+        qp.setBrush(self.foreground_colour)
         tri_size = 20
         qp.drawPolygon([QPointF(-tri_size, tri_size * -rot), QPointF(tri_size, tri_size * -rot), QPointF(0, -tri_size * -rot)])
 

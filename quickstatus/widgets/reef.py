@@ -24,6 +24,7 @@ def getAngleLineFromPoint(point: QPoint, angle: float, dist: float):
     return QLineF(point,QPointF(a,b))
 
 class ReefWidget(QWidget):
+    name = 'Reef'
     def __init__(self, wid, conf):
         super(ReefWidget, self).__init__()
         self.wid = wid
@@ -32,7 +33,6 @@ class ReefWidget(QWidget):
 
         restoreWindow(self)
 
-        self.setWindowTitle('Reef')
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
@@ -97,11 +97,10 @@ class ReefWidget(QWidget):
         else: noNetworkTable(self)
 
     def setup_palette(self):
-        global foreground_colour, reef_colour
         palette = self.palette()
-        foreground_colour = palette.color(palette.ColorRole.Text)
-        foreground_colour.setAlpha(255)
-        reef_colour = QColor("#E900FF")
+        self.foreground_colour = palette.color(palette.ColorRole.Text)
+        self.foreground_colour.setAlpha(255)
+        self.reef_colour = QColor("#E900FF")
         dark = palette.color(palette.ColorRole.Base).lighter(160)
         if sys.platform == 'darwin':
             palette.setColor(QPalette.ColorRole.Window, dark)
@@ -121,7 +120,7 @@ class ReefWidget(QWidget):
         self.draw_high_branch(qp, is_flashing, point_3, arc_angle, branch_length, 4==selected)
         
         # draw main reef
-        qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+        qp.setPen(QPen(self.reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
         qp.drawLine(0,reef_height, 0,-reef_height)
         
         qp.drawArc(0,-reef_height-arc_size,
@@ -140,8 +139,8 @@ class ReefWidget(QWidget):
     def draw_branch(self, qp:QPainter, is_flashing:bool, point:QPointF, angle:float, extend_length:float, selected:bool):
         if selected: 
             self.draw_selected(qp, is_flashing, point, angle, extend_length)
-            qp.setPen(QPen(foreground_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
-        else: qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+            qp.setPen(QPen(self.foreground_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+        else: qp.setPen(QPen(self.reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
 
         qp.drawLine(getAngleLineFromPoint(point, angle, extend_length))
 
@@ -149,8 +148,8 @@ class ReefWidget(QWidget):
         # used only for top branch
         if selected: 
             self.draw_selected(qp, is_flashing, point, arca, 0)
-            qp.setPen(QPen(foreground_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
-        else: qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+            qp.setPen(QPen(self.foreground_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+        else: qp.setPen(QPen(self.reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
 
         qp.drawLine(QPointF(point.x(), point.y()+extend_length),point)
         
@@ -165,11 +164,11 @@ class ReefWidget(QWidget):
             branch_point = getAnglePointFromPoint(index,60*floor(i/2),125)
             if i+1 == td_selected:
                 if is_flashing:
-                    qp.setPen(QPen(colours.accent_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+                    qp.setPen(QPen(Colours.accent_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
                     qp.drawPolygon(QPolygonF(self.selected).translated(branch_point))
-                qp.setPen(QPen(foreground_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+                qp.setPen(QPen(self.foreground_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
             qp.drawLine(index,branch_point)
-            qp.setPen(QPen(reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+            qp.setPen(QPen(self.reef_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
         
         # draw top-down view of reef shape
         qp.drawPolygon(self.reef)
@@ -184,11 +183,11 @@ class ReefWidget(QWidget):
 
         # draw text
         qp.setFont(font)
-        qp.setPen(foreground_colour)
+        qp.setPen(self.foreground_colour)
         qp.drawText(QPointF(0-ls_width/2,-500),place_level)
 
     def draw_selected(self, qp:QPainter, is_flashing:bool, point:QPointF, angle:float, extend_length:float):
         if is_flashing:
-            qp.setPen(QPen(colours.accent_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
+            qp.setPen(QPen(Colours.accent_colour, 24, cap=Qt.PenCapStyle.RoundCap, join=Qt.PenJoinStyle.RoundJoin))
             if angle == 0: qp.drawPolygon(QPolygonF(self.selected).translated(point))
             else: qp.drawPolygon(QPolygonF(self.selected).translated(getAnglePointFromPoint(point, angle, extend_length)))

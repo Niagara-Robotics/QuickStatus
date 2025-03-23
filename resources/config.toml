@@ -1,25 +1,21 @@
 [general]
-    save-window-states = true # Saves and restores the position and current tab of all windows
+    save-window-states = true # Saves and restores the position, size, and current tab of all windows
     global_font = 'B612' # 'B612', and 'Iosevka Aile' are built-in
     global-hotkeys = false
     [[window]] # Defines new window
         enabled = true
-        align = 'North'
         [[window.widget]] # Defines new widget
-            type = 'intake' # Defines widget type
-            base-lock = false
+            type = "faults" # Defines widget type
         [[window.widget]]
-            type = 'swerve'
-        [[window.widget]]
-            type = 'status'
+            type = "swerve"
         [[window.widget]]
             type = 'lift'
+        [[window.widget]]
+            type = 'intake'
     
     [[window]]
         [[window.widget]]
             type = 'reef'
-        [[window.widget]]
-            type = 'status'
 
 [network]
     address = "localhost" # Use either IP address or team number
@@ -27,24 +23,48 @@
 
 [tabs] # Default settings for tabs
     global-hotkeys = false # Enables tab switching via hotkeys when the window is not focused
-    align = 'South' # Align tab bar to either 'North', 'East', 'South', or 'West'
+    align = "North" # Align tab bar to either 'North', 'East', 'South', or 'West'
 
-[status] # Default settings for Status widgets
+[faults] # Default settings for fault manager widgets
     enable-scroll = true # Enables vertical scrolling through the widget
-    blink-interval = 0.2 # Time in seconds for each blink cycle. Set to 0 to disable blinking
-    network-table = "FMSInfo"
+    hide-if-empty = false
+    network-table = "SmartDashboard"
+    [[faults.fault_list]]
+        name = "Intake"
+        fault = "fm_intake_faults"
+    [[faults.fault_list]]
+        name = "Lift"
+        fault = "fm_lift_faults"
+    [[faults.fault_list]]
+        name = "Driver Input"
+        fault = "fm_DriverInput_faults"
+    [[faults.fault_list]]
+        name = "Operator Input"
+        fault = "fm_OperatorInput_faults"
+    [[faults.fault_list]]
+        name = "SMC 1"
+        fault = "fm_SMC1_faults"
+    [[faults.fault_list]]
+        name = "SMC 2"
+        fault = "fm_SMC2_faults"
+    [[faults.fault_list]]
+        name = "SMC 3"
+        fault = "fm_SMC3_faults"
+    [[faults.fault_list]]
+        name = "SMC 4"
+        fault = "fm_SMC4_faults"
 
-[swerve] # Default settings for Swerve widgets
+[swerve] # Default settings for sweerve widgets
     base-lock = false # Locks base to single rotation
     wheel-lock = false # Locks wheels to single rotation
     base-table = "tracking"
     wheel-table = "swerve"
 
-[lift] # Default settings for Lift widgets
+[lift] # Default settings for lift widgets
     network-table = "lift"
 
-[intake] # Default settings for Intake widgets
+[intake] # Default settings for intake widgets
     network-table = "intake"
 
-[reef] # Default settings for Reef widgets
+[reef] # Default settings for reef widgets
     # aint nothing here lmao

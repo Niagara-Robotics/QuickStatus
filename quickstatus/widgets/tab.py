@@ -1,6 +1,6 @@
 from quickstatus.utils.imports import *
 from quickstatus.utils.generic import restoreWindow, copyConfig, config, closeEvent
-from quickstatus.widgets.status_scroll import StatusScrollWidget
+from quickstatus.widgets.fault_scroll import FaultScrollWidget
 from quickstatus.widgets.swerve import SwerveWidget
 from quickstatus.widgets.lift import LiftWidget
 from quickstatus.widgets.intake import IntakeWidget
@@ -35,14 +35,19 @@ class TabWidget(QWidget):
         margin = margins.get(self.config['align'])
         self.layout.setContentsMargins(margin[0], margin[1], margin[2], margin[3])
         if not self.visible: self.layout.setContentsMargins(0,0,0,0)
-        
+
         # create tabs
+        widgets = {
+            'faults': FaultScrollWidget,
+            'swerve': SwerveWidget,
+            'lift': LiftWidget,
+            'intake': IntakeWidget,
+            'reef': ReefWidget
+        }
         for i in self.tablist:
-            if i['type'] == 'status': self.status_tab(conf = copyConfig('status', i))
-            if i['type'] == 'swerve': self.swerve_tab(conf = copyConfig('swerve', i))
-            if i['type'] == 'lift': self.lift_tab(conf = copyConfig('lift', i))
-            if i['type'] == 'intake': self.intake_tab(conf = copyConfig('intake', i))
-            if i['type'] == 'reef': self.reef_tab(conf = copyConfig('reef', i))
+            current = widgets[i['type']]
+            self.stack_widgets(current(self.wid, copyConfig(i['type'], i)), InfoBar)
+
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
@@ -59,33 +64,23 @@ class TabWidget(QWidget):
         if self.config['global-hotkeys'] and hasattr(key, 'char') and hasattr(key.char, 'isnumeric') and  key.char.isnumeric():
             key_text = (int(key.char)-1) % 10
             self.tabs.setCurrentIndex(key_text)
+
     def stack_widgets(self, top, bottom):
-        title = top.windowTitle()
+        title = top.name
+
         stack = QWidget()
         stack.setLayout(QGridLayout())
         stack.layout().setContentsMargins(0,0,0,0)
         stack.layout().setSpacing(0)
+
         bottom = bottom(title)
         bottom.setFixedHeight(30)
+
         stack.layout().addWidget(top, 0,0,1,1)
         stack.layout().addWidget(bottom, 1,0,1,1)
+        stack.setWindowTitle(title)
 
-        self.tabs.addTab(stack, top.windowTitle())
-
-    def status_tab(self, conf):
-        self.stack_widgets(StatusScrollWidget(wid = self.wid, conf = conf), InfoBar)
-
-    def swerve_tab(self, conf):
-        self.stack_widgets(SwerveWidget(wid = self.wid, conf = conf), InfoBar)
-
-    def lift_tab(self, conf):
-        self.stack_widgets(LiftWidget(wid = self.wid, conf = conf), InfoBar)
-        
-    def intake_tab(self, conf):
-        self.stack_widgets(IntakeWidget(wid = self.wid, conf = conf), InfoBar)
-
-    def reef_tab(self, conf):
-        self.stack_widgets(ReefWidget(wid = self.wid, conf = conf), InfoBar)
+        self.tabs.addTab(stack, title)
 
     def keyPressEvent(self, event):
         if isinstance(event, QKeyEvent) and not self.config['global-hotkeys']:
@@ -122,9 +117,9 @@ class TabWidget(QWidget):
             """)
         else:
             palette = self.tabs.palette()
-            background_colour = QPalette().color(QPalette().ColorRole.Window).darker(120)
-            palette.setColor(QPalette.ColorRole.Button, background_colour)
-            palette.setColor(QPalette.ColorRole.Window, background_colour)
+            self.background_colour = QPalette().color(QPalette().ColorRole.Window).darker(120)
+            palette.setColor(QPalette.ColorRole.Button, self.background_colour)
+            palette.setColor(QPalette.ColorRole.Window, self.background_colour)
 
             self.tabs.setPalette(palette)
 

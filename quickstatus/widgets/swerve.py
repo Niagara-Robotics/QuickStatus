@@ -4,6 +4,7 @@ from quickstatus.utils.network_tables import datatable, NetworkTables
 from math import degrees
 
 class SwerveWidget(QWidget):
+    name = 'Swerve'
     def __init__(self, wid, conf):
         super(SwerveWidget, self).__init__()
         self.wid = wid
@@ -11,8 +12,6 @@ class SwerveWidget(QWidget):
         self.config = conf
 
         restoreWindow(self)
-
-        self.setWindowTitle('Swerve')
 
         # Adjust the timer interval to match the monitor's refresh rate
         self.timer = QTimer(self)
@@ -79,15 +78,14 @@ class SwerveWidget(QWidget):
         else: noNetworkTable(self)
     
     def setup_palette(self):
-        global foreground_colour, background_colour
         palette = self.palette()
-        foreground_colour = palette.color(palette.ColorRole.Text)
-        foreground_colour.setAlpha(255)
+        self.foreground_colour = palette.color(palette.ColorRole.Text)
+        self.foreground_colour.setAlpha(255)
         dark = palette.color(palette.ColorRole.Base).lighter(160)
         if sys.platform == 'darwin': palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
-        background_colour = palette.color(palette.ColorRole.Window)
-        self.colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
+        self.background_colour = palette.color(palette.ColorRole.Window)
+        self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
     
     def check_data(self, base, wheels):
         try: self.base = base['odometry_pose'][2]
@@ -118,14 +116,14 @@ class SwerveWidget(QWidget):
             qp.translate(-wheel_x, -wheel_y)
     
     def draw_wheel_outline(self, qp:QPainter):
-        qp.setPen(QPen(background_colour, 22))
-        qp.setBrush(background_colour)
+        qp.setPen(QPen(self.background_colour, 22))
+        qp.setBrush(self.background_colour)
         qp.drawEllipse(QPoint(0,0),self.wheel_size,self.wheel_size)
     
     def draw_gauge_marks(self, qp:QPainter):
-        foreground_colour.setAlpha(150)
-        qp.setPen(QPen(foreground_colour, 4))
-        foreground_colour.setAlpha(255)
+        self.foreground_colour.setAlpha(150)
+        qp.setPen(QPen(self.foreground_colour, 4))
+        self.foreground_colour.setAlpha(255)
         qp.setBrush(Qt.BrushStyle.NoBrush)
         qp.drawLine(QLineF(-self.wheel_size/2.4, 0, self.wheel_size/2.4, 0))
         qp.drawLine(QLineF(-self.wheel_size/2.4, -self.wheel_size/2, self.wheel_size/2.4, -self.wheel_size/2))
@@ -134,16 +132,16 @@ class SwerveWidget(QWidget):
     def draw_velocity(self, qp:QPainter, bar_width:int, velocity:float, power:float):
         bd = bar_width/2
         bd2 = bd/2
-        qp.setPen(QPen(foreground_colour, 6))
+        qp.setPen(QPen(self.foreground_colour, 6))
         qp.setBrush(Qt.BrushStyle.NoBrush)
 
         qp.drawChord(QRectF(-self.wheel_size,-self.wheel_size,self.wheel_size*2,self.wheel_size*2),(bar_width*8)+(1440),((180-bar_width)*16))
         qp.drawChord(QRectF(-self.wheel_size,-self.wheel_size,self.wheel_size*2,self.wheel_size*2),(-bar_width*8)+(1440),(-(180-bar_width)*16))
         
-        qp.setPen(QPen(colours.velocity_colour, bd, cap=Qt.PenCapStyle.FlatCap))
+        qp.setPen(QPen(Colours.velocity_colour, bd, cap=Qt.PenCapStyle.FlatCap))
         qp.drawLine(QLineF(-bd2, 0, -bd2, -self.wheel_size*velocity))
         
-        qp.setPen(QPen(colours.power_colour, bd, cap=Qt.PenCapStyle.FlatCap))
+        qp.setPen(QPen(Colours.power_colour, bd, cap=Qt.PenCapStyle.FlatCap))
         qp.drawLine(QLineF(bd2, 0, bd2, -self.wheel_size*power))
     
     def draw_wheel_circle(self, qp:QPainter, status:int):
@@ -154,5 +152,5 @@ class SwerveWidget(QWidget):
     def draw_target_velocity(self, qp:QPainter, tri_size:int, target_velocity:float):
         translate = QPointF(-self.wheel_size/2.4, -self.wheel_size*target_velocity)
         qp.setPen(Qt.PenStyle.NoPen)
-        qp.setBrush(foreground_colour)
+        qp.setBrush(self.foreground_colour)
         qp.drawPolygon(QPolygonF([QPointF(0, tri_size), QPointF(0, -tri_size), QPointF(tri_size*1.5, 0)]).translated(translate))

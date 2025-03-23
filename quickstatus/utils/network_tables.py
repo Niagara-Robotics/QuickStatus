@@ -1,10 +1,10 @@
 import ntcore, struct
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import config
+from quickstatus.utils.generic import config, full_faults
 from math import degrees
 
 datatable = {
-    config['status']['network-table']: {},
+    config['faults']['network-table']: {},
     config['swerve']['base-table']: {},
     config['swerve']['wheel-table']: {},
     config['lift']['network-table']: {},
@@ -18,7 +18,7 @@ class NetworkTables():
         super(NetworkTables, self).__init__()
         inst = NetworkTables.inst
         tables = {}
-        tables['status'] = "/" + config['status']['network-table']
+        tables['faults'] = "/" + config['faults']['network-table']
         tables['swerve-base'] = config['swerve']['base-table']
         tables['swerve-wheel'] = config['swerve']['wheel-table']
         tables['lift'] = "/" + config['lift']['network-table']
@@ -47,6 +47,13 @@ class NetworkTables():
                     for i in range(0, len(value), 2):
                         temp.append(-degrees(value[i+1]))
                     value = temp
+            
+            # properly read faults
+            if topic.endswith('_faults'):
+                faults = value.split(',')[:-1]
+                for i in faults:
+                    value = []
+                    value.append(full_faults[(i)])
             
             #print(f"({path}) Value updated: {topic} = {value}")
             datatable[path][topic] = value

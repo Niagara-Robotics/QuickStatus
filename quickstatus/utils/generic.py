@@ -1,13 +1,27 @@
 from quickstatus.utils.imports import *
 import toml
+import json
+import os.path
 
-class colours():
+class Colours():
     accent_colour = QColor("#0779FF")
     caution_colour = QColor("#FFC600")
     warning_colour = QColor("#F7821B")
     death_colour = QColor("#FF5257")
     velocity_colour = QColor("#60DE36")
     power_colour = QColor("#47AC25")
+
+class FaultCache():
+    with open('resources/widgets/faults/identifiers.json') as file:
+        faults = json.load(file)
+        full_faults = {}
+        fault_icons = {}
+        for fault in faults:
+            full_faults[str(fault)] = faults[fault]
+            icon = faults[fault]['icon']
+            file = f'resources/widgets/faults/icons/{icon}'
+            if os.path.isfile(file): fault_icons[icon] = QIcon(file)
+            else: fault_icons[icon] = None
 
 def getConfig():
     with open('resources/config.toml', 'r') as f:
@@ -40,9 +54,9 @@ def noNetworkTable(self):
     width = self.size().width()
     height = self.size().height()
     palette = self.palette()
-    foreground_colour = palette.color(palette.ColorRole.Text)
-    foreground_colour.setAlpha(255)
-    qp.setPen(foreground_colour)
+    self.foreground_colour = palette.color(palette.ColorRole.Text)
+    self.foreground_colour.setAlpha(255)
+    qp.setPen(self.foreground_colour)
     font = QFont('Iosevka Aile')
     font.setPixelSize(24)
     qp.setFont(font)
@@ -55,3 +69,5 @@ def noNetworkTable(self):
 
 widget_refresh = 10
 global_font = config['general']['global_font']
+full_faults = FaultCache.full_faults
+fault_icons = FaultCache.fault_icons

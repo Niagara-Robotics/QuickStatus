@@ -4,6 +4,7 @@ from quickstatus.utils.network_tables import NetworkTables, datatable
 from math import degrees
 
 class IntakeWidget(QWidget):
+    name = 'Intake'
     def __init__(self, wid, conf):
         super(IntakeWidget, self).__init__()
         self.wid = wid
@@ -12,7 +13,6 @@ class IntakeWidget(QWidget):
 
         restoreWindow(self)
 
-        self.setWindowTitle('Intake')
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
@@ -69,15 +69,14 @@ class IntakeWidget(QWidget):
         else: noNetworkTable(self)
     
     def setup_palette(self):
-        global foreground_colour, background_colour
         palette = self.palette()
-        foreground_colour = palette.color(palette.ColorRole.Text)
-        foreground_colour.setAlpha(255)
+        self.foreground_colour = palette.color(palette.ColorRole.Text)
+        self.foreground_colour.setAlpha(255)
         dark = palette.color(palette.ColorRole.Base).lighter(160)
         if sys.platform == 'darwin': palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
-        background_colour = palette.color(palette.ColorRole.Window)
-        self.colour_chart = [foreground_colour, colours.accent_colour, colours.caution_colour, colours.warning_colour, colours.death_colour]
+        self.background_colour = palette.color(palette.ColorRole.Window)
+        self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
     
     def check_data(self, table):
         try: self.ambient = table['ambient']
@@ -103,7 +102,7 @@ class IntakeWidget(QWidget):
     
     def draw_intake(self, qp:QPainter, dt:float):
         # setup variables
-        qp.setPen(QPen(foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
+        qp.setPen(QPen(self.foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
         qp.setBrush(Qt.BrushStyle.NoBrush)
 
         arc_pos = (-300,-225)
@@ -149,7 +148,7 @@ class IntakeWidget(QWidget):
         qp.drawArc(QRectF(-arc_size/2+arc_size/2-arc_dist/2-1, -arc_dist/2, arc_dist, arc_dist), -arc_angle, arc_angle*2)
 
     def draw_intake_wheels(self, qp:QPainter, wheel_num:int, arc_size:int, arc_dist:int, wheel_size:int):
-        qp.setBrush(background_colour)
+        qp.setBrush(self.background_colour)
         for i in range(wheel_num):
             rot = -90/wheel_num*(i+1)
             rot = rot+90/wheel_num/2
@@ -162,7 +161,7 @@ class IntakeWidget(QWidget):
             if arrow_current > 0: arrow_up = True
             else: arrow_up = False
             qp.save()
-            qp.setBrush(colours.velocity_colour)
+            qp.setBrush(Colours.velocity_colour)
             qp.setPen(Qt.PenStyle.NoPen)
             tri_size = 35
             if arrow_up: qp.rotate(-90+arrow_angle)
@@ -174,17 +173,17 @@ class IntakeWidget(QWidget):
             qp.restore()
         qp.translate(0, -(arc_size/2+arc_dist/2))
         if arrow_current != 0:
-            qp.setPen(QPen(colours.velocity_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
+            qp.setPen(QPen(Colours.velocity_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
             if arrow_up: qp.drawArc(QRectF(-arc_size/2-arc_dist*2, -arc_dist*1.5, arc_size+arc_dist*4, arc_size+arc_dist*4), -arc_angle*2, -arrow_angle*16)
             else: qp.drawArc(QRectF(-arc_size/2-arc_dist*2, -arc_dist*1.5, arc_size+arc_dist*4, arc_size+arc_dist*4), arc_angle*2-1440, arrow_angle*16)
-            qp.setPen(QPen(foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
+            qp.setPen(QPen(self.foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
     
     def draw_state(self, qp:QPainter, font:QFont):
         font.setPixelSize(80)
         qp.setFont(font)
         qp.translate(0,-200)
 
-        qp.setPen(QPen(foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
+        qp.setPen(QPen(self.foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
         qp.setBrush(Qt.BrushStyle.NoBrush)
 
         action_text = self.action
@@ -216,7 +215,7 @@ class IntakeWidget(QWidget):
         qp.setPen(QPen(self.colour_chart[badness_level], 8, Qt.PenStyle.DotLine))
         qp.drawLine(QLineF(-75,100,75,100))
         
-        qp.setPen(QPen(foreground_colour, 25))
+        qp.setPen(QPen(self.foreground_colour, 25))
         if self.present: qp.drawEllipse(QPointF(0,25),50,50)
 
         qp.drawText(125,75, text)
