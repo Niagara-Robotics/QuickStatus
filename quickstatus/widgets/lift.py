@@ -57,9 +57,6 @@ class LiftWidget(QWidget):
 
             self.check_data(table, dash)
 
-            table['encoder_position'] = 1
-            table['position'] = 4.2
-
             if self.lift_height is not None or self.gripper_rot is not None:
                 self.draw_lift(qp)
             
