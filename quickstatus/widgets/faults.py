@@ -1,5 +1,5 @@
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import widget_refresh, Colours, noNetworkTable, global_font
+from quickstatus.utils.generic import widget_refresh, Colours, noNetworkTable, global_config
 from quickstatus.utils.network_tables import datatable, NetworkTables
 
 class FaultWidget(QWidget):
@@ -12,6 +12,8 @@ class FaultWidget(QWidget):
         self.config = conf
         self.width_cache = self.width()
         self.height_cache = self.height()
+
+        self.global_font = global_config.data['general']['global_font']
 
     # scrolling setup
     def minimumSizeHint(self):
@@ -102,7 +104,7 @@ class FaultWidget(QWidget):
         width = self.width_cache
         text_x = self.x
         text_y = self.y
-        font = QFont(global_font)
+        font = QFont(self.global_font)
         font.setBold(True)
         font.setPixelSize(size)
         qp.setFont(font)
@@ -130,7 +132,7 @@ class FaultWidget(QWidget):
         width = self.width_cache
         text_x = self.x
         text_y = self.y
-        font = QFont(global_font)
+        font = QFont(self.global_font)
         font.setPixelSize(size)
         qp.setFont(font)
         font_metrics = QFontMetrics(font)

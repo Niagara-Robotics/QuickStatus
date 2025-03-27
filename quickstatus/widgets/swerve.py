@@ -40,8 +40,8 @@ class SwerveWidget(QWidget):
         self.wheel_size = 90
 
         # ensure NetworkTable data exists
-        base_table = datatable[config['swerve']['base-table']]
-        wheels_table = datatable[config['swerve']['wheel-table']]
+        base_table = datatable[self.config['base-table']]
+        wheels_table = datatable[self.config['wheel-table']]
         
         if NetworkTables.inst.isConnected():
             scale = cw/400

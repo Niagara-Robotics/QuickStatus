@@ -3,6 +3,8 @@ from quickstatus.utils.generic import *
 from quickstatus.utils.network_tables import datatable, NetworkTables
 import random
 
+test = 1
+
 class LiftWidget(QWidget):
     name = 'Lift'
     def __init__(self, wid, conf):
@@ -22,6 +24,8 @@ class LiftWidget(QWidget):
         self.rot_right = True
 
         self.load_gripper()
+
+        self.global_font = global_config.data['general']['global_font']
 
     def load_gripper(self):
         with open('resources/widgets/lift/gripper.coords') as gripper_file:
@@ -179,7 +183,7 @@ class LiftWidget(QWidget):
             badness_level = 1
             text = str(lift_sensor)+"mm"
 
-        self.font = QFont(global_font)
+        self.font = QFont(self.global_font)
         self.font.setPixelSize(80)
         self.font_met = QFontMetrics(self.font)
         ls_width = self.font_met.horizontalAdvance(text)
@@ -211,7 +215,7 @@ class LiftWidget(QWidget):
         cal_text = "Calibration"
         cal_dist = 110
         max_width = 500
-        self.font = QFont(global_font)
+        self.font = QFont(self.global_font)
         self.font.setPixelSize(80)
         qp.setFont(self.font)
         self.font_met = QFontMetrics(self.font)

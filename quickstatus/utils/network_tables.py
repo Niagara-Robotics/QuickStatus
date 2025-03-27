@@ -1,9 +1,12 @@
 import ntcore, struct
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import config, full_faults
+from quickstatus.utils.generic import full_faults, global_config
 from math import degrees
 
-datatable = {
+global_config.load()
+config = global_config.data
+
+try: datatable = {
     config['faults']['network-table']: {},
     config['swerve']['base-table']: {},
     config['swerve']['wheel-table']: {},
@@ -11,6 +14,7 @@ datatable = {
     config['intake']['network-table']: {},
     'SmartDashboard': {}
     }
+except: datatable = {}
 
 class NetworkTables():
     inst = ntcore.NetworkTableInstance.getDefault()

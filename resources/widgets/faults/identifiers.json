@@ -1,24 +1,30 @@
 {
+    "400": {
+      "text": "Alliance unavailable",
+      "icon": "alliance.svg"
+    },
+
     "300": {
       "text": "Unable to reach rotation motor",
-      "icon": "rotation_motor.svg"
+      "icon": "motor.svg"
     },
     "301": {
       "text": "Unable to reach rotation encoder",
-      "icon": "rotation_encoder.svg"
+      "icon": "encoder.svg"
     },
     "302": {
       "text": "Rotation calibration timed out",
-      "icon": "rotation_calibration.svg"
+      "icon": "timeout.svg"
     },
     "303": {
       "text": "Rotation motor at thermal limit",
-      "icon": "rotation_thermal.svg"
+      "icon": "thermal_limit.svg"
     },
     "304": {
       "text": "Laser sensor fault",
       "icon": "laser_sensor.svg"
     },
+
     "1000": {
       "text": "Drivebase takeover failed",
       "icon": "drivebase_takeover.svg"
@@ -29,8 +35,9 @@
     },
     "1002": {
       "text": "Looney tunes controller detected",
-      "icon": "looney_tunes_controller.svg"
+      "icon": "controller.svg"
     },
+
     "200": {
       "text": "Lift and intake collision lock",
       "icon": "lift_intake_collision.svg"
@@ -51,16 +58,17 @@
       "text": "Unable to reach gripper",
       "icon": "gripper.svg"
     },
+
     "100": {
       "text": "Unable to reach drive motor",
-      "icon": "drive_motor.svg"
+      "icon": "motor.svg"
     },
     "101": {
       "text": "Unable to reach steer motor",
-      "icon": "steer_motor.svg"
+      "icon": "steering.svg"
     },
     "102": {
       "text": "Unable to reach steer encoder",
-      "icon": "steer_encoder.svg"
+      "icon": "encoder.svg"
     }
 }

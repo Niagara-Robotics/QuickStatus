@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g id="Motor" transform="matrix(7.46993e-17,-1.21993,1.06956,6.54916e-17,8.32569,118.469)">
+        <path d="M62.786,19.463L67.402,19.463L68.79,21.047L68.79,33.309L72.307,33.309L72.307,36.138L91.481,36.138C91.707,36.138 91.923,36.24 92.082,36.422C92.241,36.604 92.331,36.85 92.331,37.107L92.331,40.821C92.331,41.078 92.241,41.324 92.082,41.506C91.923,41.688 91.707,41.79 91.481,41.79L72.307,41.79L72.307,44.619L68.79,44.619L68.79,56.881L67.402,58.465L62.786,58.465L62.786,19.463ZM59.508,58.465L35.608,58.465L32.7,54.594L21.308,54.594L19.92,53.011L19.92,24.917L21.308,23.334L32.7,23.334L35.608,19.463L59.508,19.463L59.508,58.465Z"/>
+    </g>
+</svg>

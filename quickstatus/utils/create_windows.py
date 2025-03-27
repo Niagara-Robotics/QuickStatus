@@ -1,6 +1,8 @@
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import config, copyConfig
+from quickstatus.utils.generic import global_config, copyConfig
 from quickstatus.widgets.tab import TabWidget
+from quickstatus.widgets.error_popup import ErrorPopup
+import quickstatus.utils.generic as generic
 
 from os.path import abspath
 from os import listdir
@@ -9,6 +11,13 @@ from pynput import keyboard
 class WindowCreator(QMainWindow):
     def __init__(self):
         super(WindowCreator, self).__init__()
+        #try: generic.config = getConfig()
+        #except Exception as error: ErrorPopup(101, error)
+
+        error = generic.global_config.load()
+        if error: ErrorPopup(error[0], error[1])
+        config = global_config.data
+        generic.global_font = config['general']['global_font']
 
         # create windows
         for file in listdir('resources/fonts'):

@@ -1,7 +1,6 @@
 from quickstatus.utils.imports import *
 from quickstatus.utils.generic import *
 from quickstatus.utils.network_tables import NetworkTables, datatable
-from math import degrees
 
 class IntakeWidget(QWidget):
     name = 'Intake'
@@ -19,6 +18,8 @@ class IntakeWidget(QWidget):
         self.arrow_angle = 0
         self.rott = 0
         self.old_dt = int(monotonic()*150)
+
+        self.global_font = global_config.data['general']['global_font']
 
         self.intake_states = [
             'Standby',
@@ -51,6 +52,8 @@ class IntakeWidget(QWidget):
         
         table = datatable['intake']
 
+        #print(generic.shart)
+
         if NetworkTables.inst.isConnected():
             scale = cw/500
             qp.scale(scale, scale)
@@ -61,7 +64,7 @@ class IntakeWidget(QWidget):
             if self.encoder_position is not None or self.voltage_out is not None:
                 self.draw_intake(qp, dt)
 
-            font = QFont(global_font)
+            font = QFont(self.global_font)
 
             if self.state is not None or self.action is not None: self.draw_state(qp, font)
             if self.distance is not None: self.draw_bay(qp, (125, -125), font)

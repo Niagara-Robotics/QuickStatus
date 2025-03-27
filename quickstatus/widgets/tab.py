@@ -1,5 +1,5 @@
 from quickstatus.utils.imports import *
-from quickstatus.utils.generic import restoreWindow, copyConfig, config, closeEvent
+from quickstatus.utils.generic import restoreWindow, copyConfig, global_config, closeEvent
 from quickstatus.widgets.fault_scroll import FaultScrollWidget
 from quickstatus.widgets.swerve import SwerveWidget
 from quickstatus.widgets.lift import LiftWidget
@@ -52,14 +52,14 @@ class TabWidget(QWidget):
         self.setLayout(self.layout)
 
         self.setWindowTitle('QuickStatus (Tabs)')
-        if not self.visible: self.setWindowTitle(f"QuickStatus({self.tabs.currentWidget().windowTitle()})")
+        if not self.visible: self.setWindowTitle(f"QuickStatus ({self.tabs.currentWidget().windowTitle()})")
 
         selectedTab = self.settings.value("selectedTab")
-        if selectedTab and config['general']['save-window-states']:
+        if selectedTab and global_config.data['general']['save-window-states']:
             self.tabs.setCurrentIndex(int(selectedTab))
         
         restoreWindow(self)
-
+    
     def on_press(self, key):
         if self.config['global-hotkeys'] and hasattr(key, 'char') and hasattr(key.char, 'isnumeric') and  key.char.isnumeric():
             key_text = (int(key.char)-1) % 10
@@ -67,17 +67,21 @@ class TabWidget(QWidget):
 
     def stack_widgets(self, top, bottom):
         title = top.name
-
+        if 'faults-table' in top.config:
+            top_faults = top.config['faults-table']
+        else: top_faults = None
+        
         stack = QWidget()
         stack.setLayout(QGridLayout())
         stack.layout().setContentsMargins(0,0,0,0)
         stack.layout().setSpacing(0)
-
-        bottom = bottom(title)
-        bottom.setFixedHeight(30)
-
         stack.layout().addWidget(top, 0,0,1,1)
-        stack.layout().addWidget(bottom, 1,0,1,1)
+        
+        if top_faults is not None:
+            bottom = bottom(top_faults)
+            bottom.setFixedHeight(30)
+            stack.layout().addWidget(bottom, 1,0,1,1)
+
         stack.setWindowTitle(title)
 
         self.tabs.addTab(stack, title)

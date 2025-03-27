@@ -9,6 +9,7 @@ class FaultScrollWidget(QWidget):
 
         self.wid = wid
         self.settings = QSettings('QuickStatus', str(self.wid))
+        self.config = conf
 
         restoreWindow(self)
 
@@ -16,7 +17,7 @@ class FaultScrollWidget(QWidget):
         layout = QGridLayout(widget)
         layout.setContentsMargins(0,0,0,0)
         scroll = QScrollArea(widgetResizable=True)
-        scroll.setWidget(FaultWidget(conf))
+        scroll.setWidget(FaultWidget(self.config))
         layout.addWidget(scroll, 0, 0)
         self.setLayout(layout)
         self.setBackgroundRole(QPalette().ColorRole.Window)

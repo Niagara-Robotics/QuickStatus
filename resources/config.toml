@@ -6,10 +6,13 @@
         enabled = true
         [[window.widget]] # Defines new widget
             type = "faults" # Defines widget type
+    [[window]]
         [[window.widget]]
             type = "swerve"
+    [[window]]
         [[window.widget]]
             type = 'lift'
+    [[window]]
         [[window.widget]]
             type = 'intake'
     
@@ -27,7 +30,7 @@
 
 [faults] # Default settings for fault manager widgets
     enable-scroll = true # Enables vertical scrolling through the widget
-    hide-if-empty = false
+    hide-if-empty = true
     network-table = "SmartDashboard"
     [[faults.fault_list]]
         name = "Intake"
@@ -59,12 +62,15 @@
     wheel-lock = false # Locks wheels to single rotation
     base-table = "tracking"
     wheel-table = "swerve"
+    faults-table = ["fm_SMC1_faults", "fm_SMC2_faults", "fm_SMC3_faults", "fm_SMC4_faults"]
 
 [lift] # Default settings for lift widgets
     network-table = "lift"
+    faults-table = ["fm_lift_faults"]
 
 [intake] # Default settings for intake widgets
     network-table = "intake"
+    faults-table = ["fm_intake_faults"]
 
 [reef] # Default settings for reef widgets
-    # aint nothing here lmao
+    network-table = "SmartDashboard"

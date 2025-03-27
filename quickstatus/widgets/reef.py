@@ -40,6 +40,8 @@ class ReefWidget(QWidget):
         
         self.load_coordinates()
 
+        self.global_font = global_config.data['general']['global_font']
+
     def load_coordinates(self):
         scaling = 4
         self.selected = []
@@ -77,9 +79,9 @@ class ReefWidget(QWidget):
         dt = int(monotonic() * 150)
 
         # ensure NetworkTable data exists
-        table = datatable['SmartDashboard']
+        table = datatable[self.config['network-table']]
 
-        if NetworkTables.inst.isConnected() or True:
+        if NetworkTables.inst.isConnected():
             scale = cw/600
             qp.scale(scale,scale)
             qp.translate(cw/scale-450,ch/scale+160)
@@ -87,12 +89,14 @@ class ReefWidget(QWidget):
             self.ab += 0.01
             is_flashing = dt/50 % 1 <= 0.5
             selected = round(self.ab) % 4 + 1
+            try: selected = round(table['coral_place_level'])
+            except: selected = None
 
-            self.draw_branches(qp, 300, 130, 75, 53, is_flashing, selected)
+            if selected is not None: self.draw_branches(qp, 300, 130, 75, 53, is_flashing, selected)
             
             self.draw_topdown(qp, is_flashing)
 
-            self.draw_place_text(qp, selected)
+            if selected is not None: self.draw_place_text(qp, selected)
 
         else: noNetworkTable(self)
 
@@ -156,6 +160,7 @@ class ReefWidget(QWidget):
     def draw_topdown(self, qp:QPainter, is_flashing:bool):
         # setup variables
         td_selected = round(self.ab) % 13
+        td_selected = 0
         qp.translate(650,0)
 
         # draw branch lines
@@ -176,7 +181,7 @@ class ReefWidget(QWidget):
     def draw_place_text(self, qp:QPainter, selected:int):
         # setup variables
         place_level = "L"+str(selected)
-        font = QFont(global_font)
+        font = QFont(self.global_font)
         font.setBold(True)
         font.setPixelSize(160)
         ls_width = QFontMetrics(font).horizontalAdvance(place_level)

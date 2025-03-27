@@ -23,26 +23,57 @@ class FaultCache():
             if os.path.isfile(file): fault_icons[icon] = QIcon(file)
             else: fault_icons[icon] = None
 
-def getConfig():
-    with open('resources/config.toml', 'r') as f:
-        return(toml.load(f))
-config = getConfig()
+class Config:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.data = {}  # Empty until loaded
+            cls._instance.loaded = False
+        return cls._instance
+
+    def load(self):
+        try:
+            with open("resources/config.toml", "r") as file:
+                self.data = toml.load(file)
+                self.loaded = True
+                try: self.data['window']
+                except Exception as e: return (101, e)
+                return None
+        except Exception as e:
+            self.data = {}
+            self.loaded = False
+            return (100, e)
+
+    def get(self, *keys, default=None):
+        """Retrieve a nested config value safely."""
+        result = self.data
+        for key in keys:
+            if isinstance(result, dict): result = result.get(key, default)
+            else: return default
+        return result
+
+global_config = Config()
+config = global_config.data
 
 def copyConfig(original: str, copyto: dict):
-    config = getConfig()
     new = copyto.copy()
+    config = global_config.data
     for i in config[original]:
         if not i in new: new[i] = config[original][i]
     new.pop('type', None)
     return new
 
 def closeEvent(self, e):
+    config = global_config.data
     if config['general']['save-window-states']:
         self.settings.setValue( "windowScreenGeometry", self.saveGeometry() )
         if hasattr(self, 'tabs'): self.settings.setValue( "selectedTab", self.tabs.currentIndex() )
     e.accept()
 
 def restoreWindow(self):
+    config = global_config.data
     windowScreenGeometry = self.settings.value("windowScreenGeometry")
     if windowScreenGeometry and config['general']['save-window-states']:
         self.restoreGeometry(windowScreenGeometry)
@@ -50,6 +81,8 @@ def restoreWindow(self):
         self.resize(640, 480)
 
 def noNetworkTable(self):
+    config = global_config.data
+
     qp = QPainter(self)
     width = self.size().width()
     height = self.size().height()
@@ -57,7 +90,7 @@ def noNetworkTable(self):
     self.foreground_colour = palette.color(palette.ColorRole.Text)
     self.foreground_colour.setAlpha(255)
     qp.setPen(self.foreground_colour)
-    font = QFont('Iosevka Aile')
+    font = QFont(config['general']['global_font'])
     font.setPixelSize(24)
     qp.setFont(font)
     text = "NetworkTable not connected"
@@ -68,6 +101,5 @@ def noNetworkTable(self):
     self.setMinimumHeight(text_height)
 
 widget_refresh = 10
-global_font = config['general']['global_font']
 full_faults = FaultCache.full_faults
 fault_icons = FaultCache.fault_icons

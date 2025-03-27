@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <circle id="Wheel" cx="50" cy="50" r="43.364" style="fill:none;stroke:black;stroke-width:10px;"/>
+    <path id="That-thing-you-hold" serif:id="That thing you hold" d="M40.066,55.225C39.402,53.984 38.254,53.074 36.895,52.71C29.362,50.682 6.561,44.572 6.561,44.572L9.666,32.981C9.666,32.981 32.468,39.091 40.006,41.111C41.371,41.476 42.825,41.259 44.024,40.512C45.751,39.41 47.802,38.777 50,38.777C52.198,38.777 54.249,39.41 55.981,40.504C57.177,41.249 58.629,41.465 59.991,41.101C67.532,39.091 90.334,32.981 90.334,32.981L93.439,44.572C93.439,44.572 70.638,50.682 63.102,52.701C61.741,53.066 60.591,53.978 59.926,55.221C59.337,56.357 58.551,57.375 57.62,58.237C56.592,59.2 56.008,60.546 56.008,61.954C56,69.756 56,93.364 56,93.364L44,93.364C44,93.364 44,69.756 44,61.954C44,60.543 43.415,59.196 42.385,58.232C41.449,57.375 40.663,56.357 40.066,55.225Z"/>
+</svg>
