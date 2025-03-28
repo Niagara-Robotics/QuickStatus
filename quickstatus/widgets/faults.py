@@ -85,7 +85,7 @@ class FaultWidget(QWidget):
         self.translucent_colour = palette.color(palette.ColorRole.Text)
         self.translucent_colour.setAlpha(120)
         dark = palette.color(palette.ColorRole.Base).lighter(160)
-        if sys.platform == 'darwin': palette.setColor(QPalette.ColorRole.Window, dark)
+        palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
 

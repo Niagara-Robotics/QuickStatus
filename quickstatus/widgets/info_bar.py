@@ -72,8 +72,6 @@ class InfoBar(QWidget):
         self.foreground_colour.setAlpha(255)
         self.hl = palette.color(palette.ColorRole.WindowText)
         self.hl.setAlpha(70)
-        dark = palette.color(palette.ColorRole.Base).lighter(160)
-        if sys.platform == 'darwin': palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
     

@@ -80,8 +80,6 @@ class LiftWidget(QWidget):
         palette = self.palette()
         self.foreground_colour = palette.color(palette.ColorRole.Text)
         self.foreground_colour.setAlpha(255)
-        dark = palette.color(palette.ColorRole.Base).lighter(160)
-        if sys.platform == 'darwin': palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
         self.background_colour = palette.color(palette.ColorRole.Window)
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
