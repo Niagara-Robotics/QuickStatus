@@ -1,7 +1,7 @@
 {
     "400": {
       "text": "Alliance unavailable",
-      "icon": "alliance.svg"
+      "icon": "unknown_alliance.svg"
     },
 
     "300": {
@@ -40,7 +40,7 @@
 
     "200": {
       "text": "Lift and intake collision lock",
-      "icon": "lift_intake_collision.svg"
+      "icon": "collision.svg"
     },
     "201": {
       "text": "Unable to reach lift",

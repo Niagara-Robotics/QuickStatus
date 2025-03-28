@@ -1,12 +1,11 @@
 from quickstatus.utils.imports import *
 from quickstatus.utils.generic import widget_refresh, Colours, fault_icons, global_config
 from quickstatus.utils.network_tables import datatable, NetworkTables
-from math import ceil
 
 class InfoBar(QWidget):
     def __init__(self, faults):
         super(InfoBar, self).__init__()
-        #self.config = conf
+
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
@@ -15,7 +14,6 @@ class InfoBar(QWidget):
         self.faults = faults
 
         self.global_font = global_config.data['general']['global_font']
-
     
     def resizeEvent(self, event):
         self.width_cache = self.width()
@@ -61,9 +59,9 @@ class InfoBar(QWidget):
             w = QFontMetrics(font).horizontalAdvance(text)
             qp.drawText(QRect(10, 0, self.width_cache, self.height_cache), Qt.AlignmentFlag.AlignVCenter, text)
         
+        # draw divider
         qp.setPen(QPen(self.hl, 1))
         qp.drawLine(0,0,self.width_cache,0)
-
 
     def setup_palette(self):
         palette = self.palette()
