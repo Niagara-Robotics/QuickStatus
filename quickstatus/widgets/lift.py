@@ -13,6 +13,9 @@ class LiftWidget(QWidget):
         self.settings = QSettings('QuickStatus', str(self.wid))
         self.config = conf
 
+        self.base_width = 1000
+        self.base_height = 1500
+
         restoreWindow(self)
 
         self.timer = QTimer(self)
@@ -22,6 +25,7 @@ class LiftWidget(QWidget):
         self.old_dt = int(monotonic()*150)
         self.wr = 0
         self.rot_right = True
+        self.aspect_ratio = 0.5
 
         self.load_gripper()
 
@@ -36,8 +40,7 @@ class LiftWidget(QWidget):
                     self.gripper_rot_points.append(QPointF(float(coords[0]), float(coords[1])))
     
     def resizeEvent(self, event):
-        self.width_cache = self.width()
-        self.height_cache = self.height()
+        resize_window(self)
     
     def changeEvent(self, event):
         self.setup_palette()
@@ -54,8 +57,9 @@ class LiftWidget(QWidget):
         table = datatable['lift']
         dash = datatable['SmartDashboard']
 
+        scale = self.scale
+
         if NetworkTables.inst.isConnected():
-            scale = cw/525
             qp.scale(scale,scale)
             qp.translate(cw/scale-250,ch/scale+130)
 
@@ -248,7 +252,7 @@ class LiftWidget(QWidget):
             else:
                 qp.drawPoints([QPoint(-xs, 0), QPoint(0, 0), QPoint(xs, 0)])
 
-            qp.setPen(QPen(Colours.death_colour, 4))
+            qp.setPen(QPen(Colours.death_colour, 6))
         elif cal_state == 1:
             qp.setPen(QPen(Colours.caution_colour, 8))
             qp.drawArc(QRectF(-40,-40, 80, 80 ), int(monotonic()*-4800), 960)
@@ -258,7 +262,7 @@ class LiftWidget(QWidget):
                 QPoint(pos[0]-cs, pos[1]),
                 QPoint(pos[0],pos[1]),
                 QPoint(pos[0],pos[1]-cs*2)])
-            qp.setPen(QPen(Colours.accent_colour, 4))
+            qp.setPen(QPen(Colours.accent_colour, 6))
             
         if cal_state != 1: qp.drawEllipse(QPoint(0,0),50,50)
         qp.restore()

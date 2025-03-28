@@ -80,6 +80,14 @@ def restoreWindow(self):
     else:
         self.resize(640, 480)
 
+def resize_window(self):
+    self.width_cache = self.width()
+    self.height_cache = self.height()
+
+    scale_width = self.width_cache / self.base_width
+    scale_height = self.height_cache / self.base_height
+    self.scale = min(scale_width, scale_height)
+
 def noNetworkTable(self):
     config = global_config.data
 

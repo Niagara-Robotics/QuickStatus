@@ -107,8 +107,11 @@ class FaultWidget(QWidget):
         font = QFont(self.global_font)
         font.setBold(True)
         font.setPixelSize(size)
+        font_met = QFontMetrics(font)
         qp.setFont(font)
         text_height = QFontMetrics(font).height()
+
+        title = font_met.elidedText(title, Qt.TextElideMode.ElideRight, width-48)
 
         if self.empty: qp.setPen(self.translucent_colour)
         else: qp.setPen(self.foreground_colour)
@@ -140,9 +143,7 @@ class FaultWidget(QWidget):
         text_height = font_metrics.height()
 
         # shorten offscreen text
-        if text_width > width-64:
-            truncated_text = font_metrics.elidedText(text, Qt.TextElideMode.ElideRight, width-64)
-            qp.drawText(QRect(text_x, text_y, text_width, text_height), Qt.AlignmentFlag.AlignVCenter, truncated_text)
-        else:
-            qp.drawText(QRect(text_x, text_y, text_width, text_height), Qt.AlignmentFlag.AlignVCenter, text)
+        truncated_text = font_metrics.elidedText(text, Qt.TextElideMode.ElideRight, width-64)
+        
+        qp.drawText(QRect(text_x, text_y, text_width, text_height), Qt.AlignmentFlag.AlignVCenter, truncated_text)
         self.y += size+line_height

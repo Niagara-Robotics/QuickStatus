@@ -12,6 +12,9 @@ class IntakeWidget(QWidget):
 
         restoreWindow(self)
 
+        self.base_width = 1000
+        self.base_height = 1000
+
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
@@ -37,8 +40,7 @@ class IntakeWidget(QWidget):
         ]
     
     def resizeEvent(self, event):
-        self.width_cache = self.width()
-        self.height_cache = self.height()
+        resize_window(self)
     
     def changeEvent(self, event):
         self.setup_palette()
@@ -55,7 +57,7 @@ class IntakeWidget(QWidget):
         #print(generic.shart)
 
         if NetworkTables.inst.isConnected():
-            scale = cw/500
+            scale = self.scale
             qp.scale(scale, scale)
             qp.translate(cw/scale,ch/scale)
 

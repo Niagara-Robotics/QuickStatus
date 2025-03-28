@@ -13,6 +13,9 @@ class SwerveWidget(QWidget):
 
         restoreWindow(self)
 
+        self.base_width = 750
+        self.base_height = 750
+
         # Adjust the timer interval to match the monitor's refresh rate
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
@@ -24,8 +27,7 @@ class SwerveWidget(QWidget):
         self.base_status = 0
 
     def resizeEvent(self, event):
-        self.width_cache = self.width()
-        self.height_cache = self.height()
+        resize_window(self)
     
     def changeEvent(self, event):
         self.setup_palette()
@@ -44,7 +46,7 @@ class SwerveWidget(QWidget):
         wheels_table = datatable[self.config['wheel-table']]
         
         if NetworkTables.inst.isConnected():
-            scale = cw/400
+            scale = self.scale
             qp.scale(scale,scale)
             qp.translate(cw/scale,ch/scale)
 

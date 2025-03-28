@@ -33,6 +33,9 @@ class ReefWidget(QWidget):
 
         restoreWindow(self)
 
+        self.base_width = 1150
+        self.base_height = 1150
+
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update)
         self.timer.start(widget_refresh)
@@ -64,8 +67,7 @@ class ReefWidget(QWidget):
         ]
     
     def resizeEvent(self, event):
-        self.width_cache = self.width()
-        self.height_cache = self.height()
+        resize_window(self)
     
     def changeEvent(self, event):
         self.setup_palette()
@@ -82,7 +84,7 @@ class ReefWidget(QWidget):
         table = datatable[self.config['network-table']]
 
         if NetworkTables.inst.isConnected():
-            scale = cw/600
+            scale = self.scale
             qp.scale(scale,scale)
             qp.translate(cw/scale-450,ch/scale+160)
 
@@ -160,7 +162,7 @@ class ReefWidget(QWidget):
     def draw_topdown(self, qp:QPainter, is_flashing:bool):
         # setup variables
         td_selected = round(self.ab) % 13
-        td_selected = 0
+        td_selected = 1
         qp.translate(650,0)
 
         # draw branch lines
@@ -183,13 +185,13 @@ class ReefWidget(QWidget):
         place_level = "L"+str(selected)
         font = QFont(self.global_font)
         font.setBold(True)
-        font.setPixelSize(160)
+        font.setPixelSize(200)
         ls_width = QFontMetrics(font).horizontalAdvance(place_level)
 
         # draw text
         qp.setFont(font)
         qp.setPen(self.foreground_colour)
-        qp.drawText(QPointF(0-ls_width/2,-500),place_level)
+        qp.drawText(QPointF(0-ls_width/2,-450),place_level)
 
     def draw_selected(self, qp:QPainter, is_flashing:bool, point:QPointF, angle:float, extend_length:float):
         if is_flashing:
