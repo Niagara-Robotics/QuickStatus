@@ -104,9 +104,12 @@ class ReefWidget(QWidget):
 
     def setup_palette(self):
         palette = self.palette()
+
         self.foreground_colour = palette.color(palette.ColorRole.Text)
         self.foreground_colour.setAlpha(255)
+
         self.reef_colour = QColor("#E900FF")
+        
         self.setPalette(palette)
     
     def draw_branches(self, qp:QPainter, reef_height:float, branch_length:float, arc_size:float, arc_angle:float, is_flashing:bool, selected:int):

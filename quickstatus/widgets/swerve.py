@@ -81,10 +81,16 @@ class SwerveWidget(QWidget):
     
     def setup_palette(self):
         palette = self.palette()
+
+        self.background_colour = palette.color(palette.ColorRole.Window)
+
         self.foreground_colour = palette.color(palette.ColorRole.Text)
         self.foreground_colour.setAlpha(255)
+
+        dark = palette.color(palette.ColorRole.Base).lighter(160)
+        palette.setColor(QPalette.ColorRole.Window, dark)
         self.setPalette(palette)
-        self.background_colour = palette.color(palette.ColorRole.Window)
+        
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
     
     def check_data(self, base, wheels):

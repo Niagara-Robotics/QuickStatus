@@ -78,14 +78,21 @@ class FaultWidget(QWidget):
 
     def setup_palette(self):
         palette = self.palette()
-        new_palette = QPalette()
-        self.background_colour = new_palette.color(new_palette.ColorRole.Window)
+        bg = palette.color(palette.ColorRole.Window)
+
+        lightness = bg.lightness()
+        if lightness > 128: self.background_colour = bg.darker(120)
+        else: self.background_colour = bg.lighter(140)
+
         self.foreground_colour = palette.color(palette.ColorRole.Text)
         self.foreground_colour.setAlpha(255)
+
         self.translucent_colour = palette.color(palette.ColorRole.Text)
         self.translucent_colour.setAlpha(120)
+
         dark = palette.color(palette.ColorRole.Base).lighter(160)
         palette.setColor(QPalette.ColorRole.Window, dark)
+        
         self.setPalette(palette)
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
 

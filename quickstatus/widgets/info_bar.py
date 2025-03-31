@@ -65,11 +65,15 @@ class InfoBar(QWidget):
 
     def setup_palette(self):
         palette = self.palette()
+
         self.background_colour = palette.color(palette.ColorRole.Base)
+
         self.foreground_colour = palette.color(palette.ColorRole.Text)
         self.foreground_colour.setAlpha(255)
+
         self.hl = palette.color(palette.ColorRole.WindowText)
         self.hl.setAlpha(70)
+        
         self.setPalette(palette)
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
     

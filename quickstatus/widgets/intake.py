@@ -75,10 +75,13 @@ class IntakeWidget(QWidget):
     
     def setup_palette(self):
         palette = self.palette()
+
+        self.background_colour = palette.color(palette.ColorRole.Window)
+
         self.foreground_colour = palette.color(palette.ColorRole.Text)
         self.foreground_colour.setAlpha(255)
+        
         self.setPalette(palette)
-        self.background_colour = palette.color(palette.ColorRole.Window)
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
     
     def check_data(self, table):
