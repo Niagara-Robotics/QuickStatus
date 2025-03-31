@@ -12,24 +12,27 @@ error_list = {
 class ErrorPopup(QMessageBox):
     def __init__(self, error, details=None):
         super(ErrorPopup, self).__init__()
+        self.setWindowTitle('QuickStatus (Gone Haywire)')
 
         self.error = error
         error = error_list[self.error]
-
         self.buttonBox = QDialogButtonBox()
 
-        self.setWindowTitle('QuickStatus (Gone Haywire)')
-
         error_type = error['type']
-        if error_type == 'critical':
-            self.setIcon(self.Icon.Critical)
-        if error_type == 'error':
-            self.setIcon(self.Icon.Warning)
-        self.setText(f'Error code {self.error}')
-        if details is not None: self.setDetailedText(f"{type(details).__name__}: {details}")
-        self.setInformativeText(error['text'])
+        self.create_popup(error, error_type, details)
 
         self.exec()
-
         if error_type in ['critical', 'error']:
             sys.exit()
+    
+    def create_popup(self, error, error_type, details):
+        if error_type == 'critical':
+            self.setIcon(self.Icon.Critical)
+
+        if error_type == 'error':
+            self.setIcon(self.Icon.Warning)
+
+        self.setText(f'Error code {self.error}')
+
+        if details is not None: self.setDetailedText(f"{type(details).__name__}: {details}")
+        self.setInformativeText(error['text'])
