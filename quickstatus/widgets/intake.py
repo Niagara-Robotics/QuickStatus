@@ -80,6 +80,9 @@ class IntakeWidget(QWidget):
 
         self.foreground_colour = palette.color(palette.ColorRole.Text)
         self.foreground_colour.setAlpha(255)
+
+        dark = palette.color(palette.ColorRole.Base).lighter(160)
+        palette.setColor(QPalette.ColorRole.Window, dark)
         
         self.setPalette(palette)
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
