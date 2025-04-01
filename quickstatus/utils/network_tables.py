@@ -45,7 +45,6 @@ class NetworkTables():
             if "" in path: path.remove("")
             topic = path[-1]
             path = path[0]
-            print(f"({path}) Value updated: {topic} = {value}")
             
             # properly read structs and stuff
             if isinstance(value, bytes) and len(value)%8 == 0:
@@ -62,6 +61,7 @@ class NetworkTables():
                     value = []
                     value.append(full_faults[(i)])
             
+            #print(f"({path}) Value updated: {topic} = {value}")
             if path in datatable: datatable[path][topic] = value
 
         def connected(connected, conn_info):
