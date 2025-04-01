@@ -96,7 +96,9 @@ class ReefWidget(QWidget):
 
             if selected is not None: self.draw_branches(qp, 300, 130, 75, 53, is_flashing, selected)
             
-            self.draw_topdown(qp, is_flashing)
+            qp.translate(650, 0)
+            if global_config.data['general']['show-unused-widgets']: self.draw_topdown(qp, is_flashing)
+            else: qp.translate(0,350)
 
             if selected is not None: self.draw_place_text(qp, selected)
 
@@ -163,7 +165,6 @@ class ReefWidget(QWidget):
         # setup variables
         td_selected = round(self.ab) % 13
         td_selected = 1
-        qp.translate(650,0)
 
         # draw branch lines
         for i in range(len(self.reef_points)):

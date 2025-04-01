@@ -69,9 +69,11 @@ class LiftWidget(QWidget):
                 self.draw_lift(qp)
             
             subwidget_pos = (475, -150)
-            self.draw_arm_rotation(qp, subwidget_pos)
+            if global_config.data['general']['show-unused-widgets']: self.draw_arm_rotation(qp, subwidget_pos)
+            else: qp.translate(0, -100)
             if self.gripper_distance is not None: self.draw_sensor_values(qp, subwidget_pos)
-            self.draw_gripper_subwidget(qp, 50, subwidget_pos, dt)
+            if global_config.data['general']['show-unused-widgets']: self.draw_gripper_subwidget(qp, 50, subwidget_pos, dt)
+            else: qp.translate(0, -300)
             if self.calibration_state is not None: self.draw_calibration(qp, (subwidget_pos[0], subwidget_pos[1]+525))
             
         else: noNetworkTable(self)
@@ -117,7 +119,7 @@ class LiftWidget(QWidget):
             qp.drawRoundedRect(QRectF(-100,-self.lift_height*500,200,500), 0,0)
 
         # arm
-        if self.gripper_rot is not None:
+        if self.gripper_rot is not None and global_config.data['general']['show-unused-widgets']:
             self.draw_lift_arm(qp, QPolygonF(self.gripper_rot_points))
 
         # arm line

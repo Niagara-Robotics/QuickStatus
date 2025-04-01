@@ -113,10 +113,10 @@ class SwerveWidget(QWidget):
             qp.rotate(self.wheel_rot[i])
 
             self.draw_wheel_outline(qp)
-            self.draw_gauge_marks(qp)
+            if global_config.data['general']['show-unused-widgets']: self.draw_gauge_marks(qp)
             self.draw_velocity(qp, 50, self.velocities[i], self.powers[i])
             self.draw_wheel_circle(qp, self.wheel_status[i])
-            self.draw_target_velocity(qp, 10, self.targ_velocities[i])
+            if global_config.data['general']['show-unused-widgets']: self.draw_target_velocity(qp, 10, self.targ_velocities[i])
 
             qp.rotate(-self.wheel_rot[i])
             qp.translate(-wheel_x, -wheel_y)
