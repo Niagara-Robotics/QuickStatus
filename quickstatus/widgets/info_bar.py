@@ -35,8 +35,9 @@ class InfoBar(QWidget):
         w = 0
 
         table = datatable.get(global_config.data['faults']['network-table'], {})
-        if table.get(self.faults[0], []): bg = Colours.death_colour
-        else: bg = Colours.accent_colour
+        bg = Colours.accent_colour
+        for i in self.faults:
+            if table.get(i, []): bg = Colours.death_colour
 
         # draw faults
         if not NetworkTables.inst.isConnected():
