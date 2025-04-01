@@ -11,8 +11,8 @@ try: datatable = {
     config['swerve']['base-table']: {},
     config['swerve']['wheel-table']: {},
     config['lift']['network-table']: {},
+    config['lift']['gripper-table']: {},
     config['intake']['network-table']: {},
-    'SmartDashboard': {}
     }
 except: datatable = {}
 
@@ -21,13 +21,15 @@ class NetworkTables():
     def __init__(self):
         super(NetworkTables, self).__init__()
         inst = NetworkTables.inst
+
         tables = {}
-        tables['faults'] = "/" + config['faults']['network-table']
+        tables['faults'] = config['faults']['network-table']
         tables['swerve-base'] = config['swerve']['base-table']
         tables['swerve-wheel'] = config['swerve']['wheel-table']
-        tables['lift'] = "/" + config['lift']['network-table']
-        tables['intake'] = "/" + config['intake']['network-table']
-        tables['SmartDashboard'] = "/SmartDashboard"
+        tables['lift'] = config['lift']['network-table']
+        tables['gripper'] = config['lift']['gripper-table']
+        tables['intake'] = config['intake']['network-table']
+        for i in tables: tables[i] = "/" + tables[i]
 
         address = config['network']['address']
         if isinstance(address, str): inst.setServer(address)
@@ -44,7 +46,7 @@ class NetworkTables():
             value = event.data.value.value()
             
             # properly read structs and stuff
-            if isinstance(value, bytes):
+            if isinstance(value, bytes) and len(value)%8 == 0:
                 value = struct.unpack(str(int(len(value)/8))+"d", value)
                 if len(value) % 2 == 0:
                     temp = []
@@ -59,7 +61,7 @@ class NetworkTables():
                     value = []
                     value.append(full_faults[(i)])
             
-            #print(f"({path}) Value updated: {topic} = {value}")
+            print(f"({path}) Value updated: {topic} = {value}")
             datatable[path][topic] = value
 
         def connected(event):

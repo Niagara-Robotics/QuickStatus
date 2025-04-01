@@ -66,6 +66,7 @@
 
 [lift] # Default settings for lift widgets
     network-table = "lift"
+    gripper-table = "SmartDashboard"
     faults-table = ["fm_lift_faults"]
 
 [intake] # Default settings for intake widgets

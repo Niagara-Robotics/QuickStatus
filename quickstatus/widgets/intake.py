@@ -52,9 +52,7 @@ class IntakeWidget(QWidget):
         cw, ch = self.width_cache/2, self.height_cache/2 # centre width, centre height
         dt = int(monotonic() * 150)
         
-        table = datatable['intake']
-
-        #print(generic.shart)
+        table = datatable[self.config['network-table']]
 
         if NetworkTables.inst.isConnected():
             scale = self.scale
