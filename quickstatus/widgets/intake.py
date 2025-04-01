@@ -1,4 +1,3 @@
-from quickstatus.utils.imports import *
 from quickstatus.utils.generic import *
 from quickstatus.utils.network_tables import NetworkTables, datatable
 

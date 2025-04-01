@@ -20,5 +20,11 @@ class FaultScrollWidget(QWidget):
         scroll.setWidget(FaultWidget(self.config))
         layout.addWidget(scroll, 0, 0)
         self.setLayout(layout)
-        self.setBackgroundRole(QPalette().ColorRole.Window)
-        self.setAutoFillBackground(True)
+
+        if sys.platform == 'darwin':
+            self.setBackgroundRole(QPalette().ColorRole.Window)
+            self.setAutoFillBackground(True)
+        else:
+            palette = scroll.palette()
+            palette.setColor(QPalette.ColorRole.Base, QColor('#00000000'))
+            scroll.setPalette(palette)

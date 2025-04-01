@@ -5,19 +5,25 @@ from quickstatus.widgets.error_popup import ErrorPopup
 import quickstatus.utils.generic as generic
 
 from os.path import abspath
+from pathlib import Path
 from os import listdir
 from pynput import keyboard
 
 class WindowCreator(QMainWindow):
     def __init__(self):
         super(WindowCreator, self).__init__()
-        #try: generic.config = getConfig()
-        #except Exception as error: ErrorPopup(101, error)
 
         error = generic.global_config.load()
         if error: ErrorPopup(error[0], error[1])
         config = global_config.data
         generic.global_font = config['general']['global_font']
+
+        try: Path('resources').resolve(strict=True)
+        except Exception as e: ErrorPopup(200, e)
+        try: Path('resources/fonts').resolve(strict=True)
+        except Exception as e: ErrorPopup(201, e)
+        try: Path('resources/widgets').resolve(strict=True)
+        except Exception as e: ErrorPopup(202, e)
 
         # create windows
         for file in listdir('resources/fonts'):

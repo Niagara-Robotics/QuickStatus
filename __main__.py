@@ -3,10 +3,12 @@ from quickstatus.utils.create_windows import WindowCreator
 from quickstatus.utils.network_tables import NetworkTables
 from quickstatus.widgets.menu_bar import MenuBar
 
+is_exe = getattr(sys, 'frozen', False)
+
 if __name__ == '__main__':
-    # pyqt stuff
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon('resources/icons/mac.png'))
+    if not is_exe: app.setWindowIcon(QIcon('resources/icons/icon.png'))
+    else: app.setWindowIcon(QIcon(f"{sys._MEIPASS}\\icon.ico"))
     if sys.platform == 'win32': app.setStyle('Fusion')
     if sys.platform == 'darwin': menu_bar = MenuBar()
     ex = WindowCreator()

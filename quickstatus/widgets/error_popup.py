@@ -4,9 +4,16 @@ error_list = {
     'one zillion': {'type': 'super_critical',
                     'text': 'THE CAPS LOCK KEY WAS PRESSED'},
     100: {'type': 'critical',
-          'text': 'Failed to load config file'},
+          'text': 'Failed to load config file.'},
     101: {'type': 'error',
-          'text': 'No widgets are specified in the config file. Add some or obtain a new config file.'}
+          'text': 'No widgets are specified in the config file. Add some or obtain a new config file.'},
+    200: {'type': 'critical',
+          'text': 'No resources directory was found.'},
+    201: {'type': 'critical',
+          'text': 'No fonts directory was found.'},
+    202: {'type': 'critical',
+          'text': 'No widgets directory was found.'},
+    
 }
 
 class ErrorPopup(QMessageBox):

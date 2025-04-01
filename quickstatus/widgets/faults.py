@@ -1,9 +1,7 @@
-from quickstatus.utils.imports import *
-from quickstatus.utils.generic import widget_refresh, Colours, noNetworkTable, global_config
+from quickstatus.utils.generic import *
 from quickstatus.utils.network_tables import datatable, NetworkTables
 
 class FaultWidget(QWidget):
-        
     def __init__(self, conf):
         super(FaultWidget, self).__init__()
         self.timer = QTimer(self)
@@ -89,11 +87,12 @@ class FaultWidget(QWidget):
 
         self.translucent_colour = palette.color(palette.ColorRole.Text)
         self.translucent_colour.setAlpha(120)
-
-        dark = palette.color(palette.ColorRole.Base).lighter(160)
-        palette.setColor(QPalette.ColorRole.Window, dark)
         
-        self.setPalette(palette)
+        if sys.platform == 'darwin':
+            dark = palette.color(palette.ColorRole.Base).lighter(160)
+            palette.setColor(QPalette.ColorRole.Window, dark)
+            self.setPalette(palette)
+        
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
 
     def draw_slot(self, qp:QPainter):

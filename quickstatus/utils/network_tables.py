@@ -1,7 +1,8 @@
-import ntcore, struct
 from quickstatus.utils.imports import *
+from networktables import NetworkTables as nt
 from quickstatus.utils.generic import full_faults, global_config
 from math import degrees
+import struct
 
 global_config.load()
 config = global_config.data
@@ -17,10 +18,12 @@ try: datatable = {
 except: datatable = {}
 
 class NetworkTables():
-    inst = ntcore.NetworkTableInstance.getDefault()
+    inst = nt.getDefault()
     def __init__(self):
         super(NetworkTables, self).__init__()
         inst = NetworkTables.inst
+
+        inst.setNetworkIdentity("QuickStatus")
 
         tables = {}
         tables['faults'] = config['faults']['network-table']
@@ -32,27 +35,25 @@ class NetworkTables():
         for i in tables: tables[i] = "/" + tables[i]
 
         address = config['network']['address']
-        if isinstance(address, str): inst.setServer(address)
-        elif isinstance(address, int): inst.setServerTeam(address)
         if config['network']['ds-client']: inst.startDSClient()
-        inst.startClient4("QuickStatus")
+        elif address is not None: inst.initialize(server=address)
 
-        def value_updated(event):
+        def value_updated(key, value, isNew):
             global datatable
-            path = event.data.topic.getName().split("/")
+            
+            path = key.split("/")
             if "" in path: path.remove("")
+            topic = path[-1]
             path = path[0]
-            topic = event.data.topic.getName().split("/")[-1]
-            value = event.data.value.value()
+            print(f"({path}) Value updated: {topic} = {value}")
             
             # properly read structs and stuff
             if isinstance(value, bytes) and len(value)%8 == 0:
                 value = struct.unpack(str(int(len(value)/8))+"d", value)
-                if len(value) % 2 == 0:
-                    temp = []
-                    for i in range(0, len(value), 2):
-                        temp.append(-degrees(value[i+1]))
-                    value = temp
+                temp = []
+                for i in range(0, len(value), 2):
+                    temp.append(-degrees(value[i+1]))
+                value = temp
             
             # properly read faults
             if topic.endswith('_faults'):
@@ -61,19 +62,13 @@ class NetworkTables():
                     value = []
                     value.append(full_faults[(i)])
             
-            #print(f"({path}) Value updated: {topic} = {value}")
-            datatable[path][topic] = value
+            if path in datatable: datatable[path][topic] = value
 
-        def connected(event):
-            if inst.isConnected():
-                print(f"NetworkTables connected ({event.data.remote_ip}: {event.data.remote_port})")
+        def connected(connected, conn_info):
+            if connected:
+                print(f"NetworkTables connected ({conn_info.remote_ip}: {conn_info.remote_port})")
             else:
-                print(f"NetworkTables disconnnected ({event.data.remote_ip}: {event.data.remote_port})")
+                print(f"NetworkTables disconnnected ({conn_info.remote_ip}: {conn_info.remote_port})")
 
-        self.topicAddedListeners = []
-        for i in tables:
-            self.topicAddedListeners.append(inst.addListener(
-                [tables[i] + "/"], ntcore.EventFlags.kValueAll, value_updated
-            ))
-
-        self.connectedListener = inst.addConnectionListener(True, connected)
+        inst.addEntryListener(value_updated, True)
+        inst.addConnectionListener(connected, True)
