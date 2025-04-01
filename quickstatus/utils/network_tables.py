@@ -61,7 +61,7 @@ class NetworkTables():
                     value = []
                     value.append(full_faults[(i)])
             
-            print(f"({path}) Value updated: {topic} = {value}")
+            #print(f"({path}) Value updated: {topic} = {value}")
             datatable[path][topic] = value
 
         def connected(event):

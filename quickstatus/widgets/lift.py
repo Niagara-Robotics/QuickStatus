@@ -56,7 +56,6 @@ class LiftWidget(QWidget):
         # ensure NetworkTable data exists
         table = datatable[self.config['network-table']]
         dash = datatable[self.config['gripper-table']]
-        print(table)
 
         scale = self.scale
 
