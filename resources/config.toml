@@ -56,6 +56,9 @@
     [[faults.fault_list]]
         name = "SMC 4"
         fault = "fm_SMC4_faults"
+    [[faults.fault_list]]
+        name = "Auto Pilot"
+        fault = "fm_AutoPilot_faults"
 
 [swerve] # Default settings for sweerve widgets
     base-lock = false # Locks base to single rotation
