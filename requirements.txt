@@ -2,3 +2,4 @@ PyQt6==6.8.1
 toml==0.10.2
 pynput==1.7.7
 pynetworktables==2021.0.0
+moms-apriltag==2023.1.15

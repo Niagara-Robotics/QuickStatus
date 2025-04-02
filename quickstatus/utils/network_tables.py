@@ -60,7 +60,7 @@ class NetworkTables():
                 faults = value.split(',')[:-1]
                 for i in faults:
                     value = []
-                    value.append(full_faults[(i)])
+                    value.append(full_faults[i])
             
             #print(f"({path}) Value updated: {topic} = {value}")
             if path in datatable: datatable[path][topic] = value

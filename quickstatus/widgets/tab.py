@@ -5,6 +5,7 @@ from quickstatus.widgets.swerve import SwerveWidget
 from quickstatus.widgets.lift import LiftWidget
 from quickstatus.widgets.intake import IntakeWidget
 from quickstatus.widgets.reef import ReefWidget
+from quickstatus.widgets.vision import VisionWidget
 from quickstatus.widgets.info_bar import InfoBar
 
 class TabWidget(QWidget):
@@ -42,7 +43,8 @@ class TabWidget(QWidget):
             'swerve': SwerveWidget,
             'lift': LiftWidget,
             'intake': IntakeWidget,
-            'reef': ReefWidget
+            'reef': ReefWidget,
+            'vision': VisionWidget
         }
         for i in self.tablist:
             current = widgets[i['type']]
