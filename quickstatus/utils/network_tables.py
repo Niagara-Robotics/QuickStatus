@@ -49,10 +49,11 @@ class NetworkTables():
             # properly read structs and stuff
             if isinstance(value, bytes) and len(value)%8 == 0:
                 value = struct.unpack(str(int(len(value)/8))+"d", value)
-                temp = []
-                for i in range(0, len(value), 2):
-                    temp.append(-degrees(value[i+1]))
-                value = temp
+                if len(value) % 2 == 0:
+                    temp = []
+                    for i in range(0, len(value), 2):
+                        temp.append(-degrees(value[i+1]))
+                    value = temp
             
             # properly read faults
             if topic.endswith('_faults'):
