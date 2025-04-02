@@ -68,12 +68,12 @@ class LiftWidget(QWidget):
             if self.lift_height is not None or self.gripper_rot is not None:
                 self.draw_lift(qp)
             
-            subwidget_pos = (475, -150)
+            subwidget_pos = (475, 50)
             if global_config.data['general']['show-unused-widgets']: self.draw_arm_rotation(qp, subwidget_pos)
             else: qp.translate(0, -100)
             if self.gripper_distance is not None: self.draw_sensor_values(qp, subwidget_pos)
-            if global_config.data['general']['show-unused-widgets']: self.draw_gripper_subwidget(qp, 50, subwidget_pos, dt)
-            else: qp.translate(0, -300)
+            self.draw_gripper_subwidget(qp, 50, subwidget_pos, dt)
+            qp.translate(0, -300)
             if self.calibration_state is not None: self.draw_calibration(qp, (subwidget_pos[0], subwidget_pos[1]+525))
             
         else: noNetworkTable(self)
@@ -316,18 +316,19 @@ class LiftWidget(QWidget):
         qp.translate(position)
         qp.drawEllipse(QPoint(0, 0), wheel_size, wheel_size)
 
-        # draw velocity outline
-        qp.setPen(QPen(self.background_colour, 24))
-        qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
+        if global_config.data['general']['show-unused-widgets']:
+            # draw velocity outline
+            qp.setPen(QPen(self.background_colour, 24))
+            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
 
-        # draw velocity
-        qp.setPen(QPen(Colours.velocity_colour, 8))
-        qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
+            # draw velocity
+            qp.setPen(QPen(Colours.velocity_colour, 8))
+            qp.drawArc(QRectF(-arc_size, -arc_size, arc_size*2, arc_size*2), angle, 960)
 
-        # draw arrow
-        qp.setPen(Qt.PenStyle.NoPen)
-        qp.setBrush(self.foreground_colour)
-        tri_size = 20
-        qp.drawPolygon([QPointF(-tri_size, tri_size * -rot), QPointF(tri_size, tri_size * -rot), QPointF(0, -tri_size * -rot)])
+            # draw arrow
+            qp.setPen(Qt.PenStyle.NoPen)
+            qp.setBrush(self.foreground_colour)
+            tri_size = 20
+            qp.drawPolygon([QPointF(-tri_size, tri_size * -rot), QPointF(tri_size, tri_size * -rot), QPointF(0, -tri_size * -rot)])
 
         qp.translate(-position)
