@@ -1,6 +1,6 @@
 [general]
     save-window-states = true # Saves and restores the position, size, and current tab of all windows
-    show-unused-widgets = true # Temporary option in place until all widgets are fully supported by NetworkTables
+    show-unused-widgets = false # Temporary option in place until all widgets are fully supported by NetworkTables
     global_font = 'B612' # 'B612', and 'Iosevka Aile' are built-in
     global-hotkeys = false
     [[window]] # Defines new window
