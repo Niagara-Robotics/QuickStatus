@@ -31,14 +31,11 @@ class FaultWidget(QWidget):
         qp = QPainter(self)
         qp.setRenderHint(QPainter.RenderHint.Antialiasing) # VERY IMPORTANT AND MAKES EVERYTHING BEAUTIFUL ✨
 
-        time = monotonic()
-
-        b = 0
-
         table = datatable[self.config['network-table']]
 
         if NetworkTables.inst.isConnected():
             # variables
+            self.x = 24
             self.y = 12
             self.radius = 16
             self.title_size = 28
@@ -46,6 +43,8 @@ class FaultWidget(QWidget):
             self.line_spacing = 8
             self.empty_space = self.line_spacing
             self.swap = 0
+            self.any_faults = False
+            self.recieving_data = False
 
             # create categories
             for category in self.config['fault_list']:
@@ -54,6 +53,7 @@ class FaultWidget(QWidget):
 
                 if self.faults is not None:
                     self.empty = not self.faults
+                    self.recieving_data = True
 
                     if not (self.config['hide-if-empty'] and self.empty):
                         self.x = 24
@@ -66,6 +66,13 @@ class FaultWidget(QWidget):
                         
                         self.y += self.text_size
                         self.swap += 1
+                        self.any_faults = True
+            
+            self.empty = True
+            if self.recieving_data == False:
+                self.draw_title(qp, 'Not recieving data', self.title_size, 12)
+            elif self.any_faults == False and self.config['hide-if-empty']:
+                self.draw_title(qp, 'No active faults', self.title_size, 12)
 
             self.setMinimumHeight(self.y)
         else: noNetworkTable(self)
