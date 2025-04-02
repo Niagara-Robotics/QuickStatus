@@ -1,1 +1,2 @@
 pyinstaller==6.12.0
+py2app==0.28.8
