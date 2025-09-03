@@ -119,7 +119,7 @@ class LiftWidget(QWidget):
             qp.drawRoundedRect(QRectF(-100,-self.lift_height*500,200,500), 0,0)
 
         # arm
-        if self.gripper_rot is not None and global_config.data['general']['show-unused-widgets']:
+        if self.gripper_rot is not None:
             self.draw_lift_arm(qp, QPolygonF(self.gripper_rot_points))
 
         # arm line
@@ -130,7 +130,7 @@ class LiftWidget(QWidget):
         qp.save()
         height = self.lift_height if self.lift_height is not None else 0.5
         qp.translate(0,-height*1000+500)
-        qp.rotate(self.gripper_rot*50)
+        qp.rotate(self.gripper_rot)
         # draw arm outline
         qp.setPen(QPen(self.background_colour, 24))
         qp.drawPolygon(polygon)

@@ -40,9 +40,7 @@ class InfoBar(QWidget):
             if table.get(i, []): bg = Colours.death_colour
 
         # draw faults
-        if not NetworkTables.inst.isConnected():
-            qp.fillRect(QRect(0,0,self.width_cache,self.height_cache), self.background_colour)
-        else:
+        if NetworkTables.inst.isConnected():
             qp.fillRect(QRect(0,0,self.width_cache,self.height_cache), bg)
             for fault in self.faults:
                 fault_entries = table.get(fault, [])
@@ -54,6 +52,8 @@ class InfoBar(QWidget):
                             w += 30
                 else:
                     text = 'No faults'
+        else:
+            qp.fillRect(QRect(0,0,self.width_cache,self.height_cache), self.background_colour)
 
         # fallback text
         if w == 0:

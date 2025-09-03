@@ -19,7 +19,7 @@ class FaultCache():
         for fault in faults:
             full_faults[str(fault)] = faults[fault]
             icon = faults[fault]['icon']
-            file = f'resources/widgets/faults/icons/{icon}'
+            file = f'resources/widgets/faults/fault_icons/{icon}'
             if os.path.isfile(file): fault_icons[icon] = QIcon(file)
             else: fault_icons[icon] = None
 
@@ -47,7 +47,6 @@ class Config:
             return (100, e)
 
     def get(self, *keys, default=None):
-        """Retrieve a nested config value safely."""
         result = self.data
         for key in keys:
             if isinstance(result, dict): result = result.get(key, default)

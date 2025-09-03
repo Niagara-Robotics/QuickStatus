@@ -21,12 +21,6 @@ class VisionWidget(QWidget):
 
         self.global_font = global_config.data['general']['global_font']
 
-        self.vision_states = [
-            'Standby',
-            'Evil Scary Vision Mode'
-        ]
-        self.latency = 0
-
         self.setup_bar(width=600, height=20, ticks=3)
         self.tag_cache = {}
         self.setup_tags(min_id=1, max_id=22)
@@ -59,19 +53,18 @@ class VisionWidget(QWidget):
         
         cw, ch = self.width_cache/2, self.height_cache/2 # centre width, centre height
         
-        #table = datatable[self.config['network-table']]
+        table = datatable[self.config['network-table']]
 
-        if NetworkTables.inst.isConnected() or True:
+        if NetworkTables.inst.isConnected():
             scale = self.scale
             qp.scale(scale, scale)
             qp.translate(cw/scale,ch/scale)
 
-            #self.check_data(table)
+            self.check_data(table)
 
             font = QFont(self.global_font)
-            self.state = self.vision_states[0]
-            self.current_tag = 1
-            if not self.current_tag in self.tag_cache:
+
+            if not self.current_tag in self.tag_cache and self.current_tag is not None:
                 self.setup_tags(self.current_tag, self.current_tag)
 
             self.draw_state(qp, font, (-400,150))
@@ -96,33 +89,23 @@ class VisionWidget(QWidget):
         self.colour_chart = [self.foreground_colour, Colours.accent_colour, Colours.caution_colour, Colours.warning_colour, Colours.death_colour]
     
     def check_data(self, table):
-        try: self.ambient = table['ambient']
-        except: self.ambient = None
-
-        try: self.encoder_position = table['encoder_position']
-        except: self.encoder_position = None
-
-        try: self.distance = table['distance']
-        except: self.distance = None
-
-        try: self.present = table['present']
-        except: self.present = None
-
-        try: self.voltage_out = table['voltage_out']
-        except: self.voltage_out = None
-
-        try: self.state = self.intake_states[int(table['state'])]
+        try: self.state = table['vision_status']
         except: self.state = None
 
-        try: self.action = self.intake_actions[int(table['action'])]
-        except: self.action = None
+        try: self.current_tag = int(table['used_tag_id'])
+        except: self.current_tag = None
+
+        try: self.latency = table['Vision Composite Time']
+        except: self.latency = None
     
     def draw_state(self, qp:QPainter, font:QFont, pos:tuple):
         # setup variables
         font.setPixelSize(80)
         qp.setFont(font)
 
-        qp.setPen(QPen(self.foreground_colour, 8, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
+        if self.state == 'Tracking': box_colour = Colours.velocity_colour
+        else: box_colour = self.foreground_colour
+        qp.setPen(QPen(box_colour, 12, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.RoundJoin))
         qp.setBrush(Qt.BrushStyle.NoBrush)
 
         state_text = self.state
@@ -196,10 +179,11 @@ class VisionWidget(QWidget):
         qp.setPen(Qt.PenStyle.NoPen)
         qp.drawRect(rect)
 
+        
         qp.setPen(QPen(self.foreground_colour, 12, cap=Qt.PenCapStyle.FlatCap, join=Qt.PenJoinStyle.MiterJoin))
         qp.drawText(rect, Qt.AlignmentFlag.AlignCenter, 'No\nAprilTag')
 
-        if True:
+        if self.current_tag != -1:
             qp.drawImage(rect, self.tag_cache[self.current_tag])
             text = f'ID {self.current_tag}'
         else: text = 'nil'
@@ -208,4 +192,3 @@ class VisionWidget(QWidget):
         font.setPixelSize(100)
         qp.setFont(font)
         qp.drawText(rect.adjusted(-size,0,-size,0), Qt.AlignmentFlag.AlignCenter, text)
-        

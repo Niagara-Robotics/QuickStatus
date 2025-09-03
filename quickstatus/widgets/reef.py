@@ -88,17 +88,15 @@ class ReefWidget(QWidget):
             qp.scale(scale,scale)
             qp.translate(cw/scale-450,ch/scale+160)
 
-            self.ab += 0.01
             is_flashing = dt/50 % 1 <= 0.5
-            selected = round(self.ab) % 4 + 1
-            try: selected = round(table['coral_place_level'])
-            except: selected = None
+            self.check_data(table)
+            selected = self.selected_level
 
             if selected is not None: self.draw_branches(qp, 300, 130, 75, 53, is_flashing, selected)
             
             qp.translate(650, 0)
-            if global_config.data['general']['show-unused-widgets']: self.draw_topdown(qp, is_flashing)
-            else: qp.translate(0,350)
+            
+            if self.td_selected is not None: self.draw_topdown(qp, is_flashing)
 
             if selected is not None: self.draw_place_text(qp, selected)
 
@@ -113,6 +111,19 @@ class ReefWidget(QWidget):
         self.reef_colour = QColor("#E900FF")
         
         self.setPalette(palette)
+    
+    def check_data(self, table):
+        try: self.selected_level = int(table['coral_place_level'])
+        except: self.selected_level = None
+
+        try: self.reef_face = table['Reef Face']
+        except: self.reef_face = None
+
+        try: self.reef_tree = table['Reef Tree']
+        except: self.reef_tree = None
+
+        try: self.td_selected = -(self.reef_face*2 - 2 + self.reef_tree) + 10
+        except: self.td_selected = None
     
     def draw_branches(self, qp:QPainter, reef_height:float, branch_length:float, arc_size:float, arc_angle:float, is_flashing:bool, selected:int):
         # setup variables
@@ -163,8 +174,7 @@ class ReefWidget(QWidget):
         
     def draw_topdown(self, qp:QPainter, is_flashing:bool):
         # setup variables
-        td_selected = round(self.ab) % 13
-        td_selected = 1
+        td_selected = ((self.td_selected-1) % 12) + 1
 
         # draw branch lines
         for i in range(len(self.reef_points)):

@@ -19,7 +19,7 @@
         [[window.widget]]
             type = 'reef'
     [[window]]
-        enabled = false
+        enabled = true
         [[window.widget]]
             type = 'vision'
 
@@ -84,4 +84,4 @@
     network-table = "SmartDashboard"
 
 [vision] # Default settings for vision widgets
-    network-table = ""
+    network-table = "tracking"
